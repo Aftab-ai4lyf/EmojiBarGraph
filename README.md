@@ -64,6 +64,7 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 ```
+![Emoji Bar Graph Demo](https://example.com/emojibargraphdemo.png)
 
 ## License:
 This library is available under the MIT license.
