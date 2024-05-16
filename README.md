@@ -31,24 +31,28 @@ import SwiftUI
 import EmojiBarGraph
 
 struct ContentView: View {
-    let data: [EmojiBarData] = [
-        EmojiBarData(value: 5, emoji: "😊"),
-        EmojiBarData(value: 8, emoji: "🚀"),
-        EmojiBarData(value: 3, emoji: "🎉"),
-        EmojiBarData(value: 6, emoji: "📱"),
-        EmojiBarData(value: 4, emoji: "🌟")
-    ]
+    @State var yDataList:[[BarChart]] = [[.init(progress: 1,totalProgress: 4,color: "#FA6418"),.init(progress: 3,totalProgress: 14,color: "#BD013C",emoji: "love")],
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C",emoji: "love")],
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C",emoji: "love")],
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C",emoji: "love")],
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C",emoji: "love")],
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C",emoji: "love")],
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C",emoji: "love")]]
+    
+    var xDataList:[String] = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 
     var body: some View {
         VStack {
             Text("StackGraph")
                 .font(.title)
-            StackGraph(data: data)
+            EmojiChartView(chartType: .StackChart, yDataList: $yDataList, xDataList: xDataList, showEmoji: true)
+                    .setYAxisTitle("Number of Times")
                 .frame(height: 200)
 
             Text("GroupGraph")
                 .font(.title)
-            GroupGraph(data: data)
+            EmojiChartView(chartType: .GroupChart, yDataList: $yDataList, xDataList: xDataList, showEmoji: false)
+                    .setYAxisTitle("Number of Times")
                 .frame(height: 200)
         }
     }
