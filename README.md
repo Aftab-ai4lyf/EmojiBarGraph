@@ -64,6 +64,11 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 ```
+
+## Group Bar Graph:
+![Emoji Group Bar Graph Demo](https://github.com/Aftab-ai4lyf/EmojiBarGraph/blob/main/Group%20Chart.png)
+
+## Stack Bar Graph:
 ![Emoji Group Bar Graph Demo](https://github.com/Aftab-ai4lyf/EmojiBarGraph/blob/main/Group%20Chart.png)
 
 ## License:
