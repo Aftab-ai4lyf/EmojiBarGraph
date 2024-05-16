@@ -69,7 +69,7 @@ struct ContentView_Previews: PreviewProvider {
 ![Emoji Group Bar Graph Demo](https://github.com/Aftab-ai4lyf/EmojiBarGraph/blob/main/Group%20Chart.png)
 
 ## Stack Bar Graph:
-![Emoji Group Bar Graph Demo](https://github.com/Aftab-ai4lyf/EmojiBarGraph/blob/main/Group%20Chart.png)
+![Emoji Group Bar Graph Demo](https://github.com/Aftab-ai4lyf/EmojiBarGraph/blob/main/Stack%20Bar%20Chart.png?raw=true)
 
 ## License:
 This library is available under the MIT license.
