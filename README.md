@@ -17,7 +17,7 @@ You can install this library via Swift Package Manager.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/your-library-repo.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/Aftab-ai4lyf/EmojiBarGraph", .upToNextMajor(from: "1.0.0"))
 ]
 ```
 
