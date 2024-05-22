@@ -7,9 +7,9 @@ import SwiftUI
 @available(iOS 17.0, *)
 public struct EmojiChartView: View {
     
-    public var chartType:ChartType
+    public var chartType:EmojiChartView.ChartType
     
-    @Binding var yDataList:[[BarChart]]
+    @Binding var yDataList:[[EmojiChartView.BarChart]]
     var xDataList:[String]
     
     var showEmoji:Bool
@@ -30,7 +30,7 @@ public struct EmojiChartView: View {
     var emojiHeight = 8
     var emojiWidth = 8
     
-    var body: some View {
+    public var body: some View {
         ZStack {
             
             if(chartType == .GroupChart){
