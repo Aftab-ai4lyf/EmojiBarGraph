@@ -47,7 +47,7 @@ public struct EmojiStackBarChart: View {
     
     @State var isDataLoaded = false
     
-    var body: some View {
+   public var body: some View {
         ZStack(alignment: .bottom) {
             
             VStack(spacing: 0) {
