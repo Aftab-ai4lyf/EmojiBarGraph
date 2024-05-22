@@ -8,15 +8,19 @@
 import Foundation
 
  
-
-struct BarChart : Identifiable, Hashable{
-    
-    var id:UUID = UUID()
-    
-    var progress:Double = 0
-    var totalProgress:Double = 0
-    var color:String = ""
-    var emoji:String = ""
+@available(iOS 17.0, *)
+extension EmojiChartView {
    
+    struct BarChart : Identifiable, Hashable{
+        
+        var id:UUID = UUID()
+        
+        var progress:Double = 0
+        var totalProgress:Double = 0
+        var color:String = ""
+        var emoji:String = ""
+        
+        
+    }
     
 }
