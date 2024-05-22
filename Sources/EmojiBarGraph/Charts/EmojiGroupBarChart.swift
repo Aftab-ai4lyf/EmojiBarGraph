@@ -13,7 +13,7 @@ import SwiftUI
 struct EmojiGroupBarChart: View {
     
     
-    @Binding var yValues:[[BarChart]]
+    @Binding var yValues:[[EmojiChartView.BarChart]]
     var xValues:[String]
     var showEmoji:Bool
     
