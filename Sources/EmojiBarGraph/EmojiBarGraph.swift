@@ -5,7 +5,7 @@
 import SwiftUI
 
 @available(iOS 17.0, *)
-struct EmojiChartView: View {
+public struct EmojiChartView: View {
     
     public var chartType:ChartType
     
