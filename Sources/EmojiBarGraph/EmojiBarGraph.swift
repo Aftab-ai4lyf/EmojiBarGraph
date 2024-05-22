@@ -7,7 +7,7 @@ import SwiftUI
 @available(iOS 17.0, *)
 public struct EmojiChartView: View {
     
-    public var chartType:EmojiChartView.ChartType
+    var chartType:EmojiChartView.ChartType
     
     @Binding var yDataList:[[EmojiChartView.BarChart]]
     var xDataList:[String]
