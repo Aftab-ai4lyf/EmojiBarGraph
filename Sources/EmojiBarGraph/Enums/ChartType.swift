@@ -7,9 +7,13 @@
 
 import Foundation
 
-
-enum ChartType{
-    
-    case GroupChart, StackChart
+@available(iOS 17.0, *)
+extension EmojiChartView {
+  
+    enum ChartType{
+        
+        case GroupChart, StackChart
+        
+    }
     
 }
