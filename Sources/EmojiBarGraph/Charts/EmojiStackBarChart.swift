@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
  
 @available(iOS 17.0, *)
-struct EmojiStackBarChart: View {
+public struct EmojiStackBarChart: View {
     
     @Binding var yValues:[[EmojiChartView.BarChart]]
     var xValues:[String]
