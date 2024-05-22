@@ -11,7 +11,7 @@ import SwiftUI
 @available(iOS 17.0, *)
 struct EmojiStackBarChart: View {
     
-    @Binding var yValues:[[BarChart]]
+    @Binding var yValues:[[EmojiChartView.BarChart]]
     var xValues:[String]
     var showEmoji:Bool
     
