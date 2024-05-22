@@ -57,7 +57,7 @@ public struct EmojiGroupBarChart: View {
     @State private var tooltipPosition: CGPoint = .zero
     
     
-    var body: some View {
+    public var body: some View {
         ZStack(alignment: .bottom) {
             
             VStack(spacing: 0) {
