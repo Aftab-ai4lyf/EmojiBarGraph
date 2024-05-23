@@ -23,7 +23,7 @@ extension EmojiChartView {
        
 
        // Public initializer if needed
-        public init(id: UUID = UUID(), progress: Double = 0, totalProgress: Double = 0, color: String = "", emoji: String = "",title:String) {
+        public init(id: UUID = UUID(), progress: Double = 0, totalProgress: Double = 0, color: String = "", emoji: String = "",title:String = "") {
             self.id = id
             self.progress = progress
             self.totalProgress = totalProgress
