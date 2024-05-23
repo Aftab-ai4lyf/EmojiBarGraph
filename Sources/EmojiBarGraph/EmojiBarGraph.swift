@@ -1,35 +1,64 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
-
+ 
 
 import SwiftUI
 
 @available(iOS 17.0, *)
 public struct EmojiChartView: View {
     
-    var chartType:EmojiChartView.ChartType
+    public var chartType:EmojiChartView.ChartType
     
-    @Binding var yDataList:[[EmojiChartView.BarChart]]
-    var xDataList:[String]
+    @Binding public var yDataList:[[EmojiChartView.BarChart]]
+    public var xDataList:[String]
     
-    var showEmoji:Bool
+   public var showEmoji:Bool
     
-    var yAxisTitle:String?
+   public var yAxisTitle:String?
     
-    var valuesColor:Color = .black
-    var linesColor:Color = .black.opacity(0.50)
+   public var valuesColor:Color = .black
+    public var linesColor:Color = .black.opacity(0.50)
     
-    var progressBGColor = Color.gray.opacity(0.40)
+    public var progressBGColor = Color.gray.opacity(0.40)
     
-    var fontName = ""
+   public var fontName = ""
     
-    var yAxisTitleSize = 12
+   public var yAxisTitleSize = 12
     
-    var yAxisValuesSize = 12
+   public var yAxisValuesSize = 12
     
-    var emojiHeight = 8
-    var emojiWidth = 8
+   public var emojiHeight = 8
+   public var emojiWidth = 8
     
+    // Public initializer
+    public init(chartType: EmojiChartView.ChartType,
+                yDataList: Binding<[[EmojiChartView.BarChart]]>,
+                xDataList: [String],
+                showEmoji: Bool,
+                yAxisTitle: String? = nil,
+                valuesColor: Color = .black,
+                linesColor: Color = .black.opacity(0.50),
+                progressBGColor: Color = Color.gray.opacity(0.40),
+                fontName: String = "",
+                yAxisTitleSize: Int = 12,
+                yAxisValuesSize: Int = 12,
+                emojiHeight: Int = 8,
+                emojiWidth: Int = 8) {
+        self._yDataList = yDataList
+        self.chartType = chartType
+        self.xDataList = xDataList
+        self.showEmoji = showEmoji
+        self.yAxisTitle = yAxisTitle
+        self.valuesColor = valuesColor
+        self.linesColor = linesColor
+        self.progressBGColor = progressBGColor
+        self.fontName = fontName
+        self.yAxisTitleSize = yAxisTitleSize
+        self.yAxisValuesSize = yAxisValuesSize
+        self.emojiHeight = emojiHeight
+        self.emojiWidth = emojiWidth
+    }
+    
+    
+
     public var body: some View {
         ZStack {
             
