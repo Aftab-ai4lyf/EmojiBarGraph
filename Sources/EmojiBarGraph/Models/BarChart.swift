@@ -11,14 +11,24 @@ import Foundation
 @available(iOS 17.0, *)
 extension EmojiChartView {
    
-    struct BarChart : Identifiable, Hashable{
+    public struct BarChart : Identifiable, Hashable{
         
-        var id:UUID = UUID()
+       public var id:UUID = UUID()
         
-        var progress:Double = 0
-        var totalProgress:Double = 0
-        var color:String = ""
-        var emoji:String = ""
+       public var progress:Double = 0
+       public var totalProgress:Double = 0
+       public var color:String = ""
+       public var emoji:String = ""
+       
+
+       // Public initializer if needed
+        public init(id: UUID = UUID(), progress: Double = 0, totalProgress: Double = 0, color: String = "", emoji: String = "") {
+            self.id = id
+            self.progress = progress
+            self.totalProgress = totalProgress
+            self.color = color
+            self.emoji = emoji
+        }
         
         
     }
