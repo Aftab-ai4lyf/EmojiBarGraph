@@ -10,7 +10,7 @@ import Foundation
 @available(iOS 17.0, *)
 extension EmojiChartView {
   
-    enum ChartType{
+    public enum ChartType{
         
         case GroupChart, StackChart
         
