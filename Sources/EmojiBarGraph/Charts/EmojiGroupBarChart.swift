@@ -19,7 +19,7 @@ public struct EmojiGroupBarChart: View {
     
     var tempYValues:[[Int]] = [[0,0],[0,0],[0,0],[0,0]]
     @State var tempMaxYValues:[[Int]] = [[0,0],[0,0],[0,0],[0,0]]
-    var tempXValues:[String] = ["15m","30m","45m","60m"]
+    var tempXValues:[String] = ["15a","30m","45m","60m"]
     
     @State var dataSet:[Int] = []
     
