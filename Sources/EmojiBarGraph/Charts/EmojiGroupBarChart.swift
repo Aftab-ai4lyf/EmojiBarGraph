@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
- 
+
 @available(iOS 17.0, *)
 public struct EmojiGroupBarChart: View {
     
@@ -69,7 +69,8 @@ public struct EmojiGroupBarChart: View {
                         .rotationEffect(Angle(degrees: 270))
                         .foregroundColor(valuesColor)
                         .fixedSize()
-                        .frame(width: 20, height: 0)
+                        .frame(width: 0, height: 0)
+                        .padding(.trailing,8)
                         .onTapGesture {
                             
                             let i = yValues[1][1].totalProgress
@@ -130,22 +131,27 @@ public struct EmojiGroupBarChart: View {
                                         
                                         let maxValue = yValue[j].totalProgress
                                         let progress = yValue[j].progress
-                                        let height = Double(30 * maxValue)
+//                                        let height = Double(30 * progress > maxValue ? progress : maxValue)
+                                        let height = Double(30 * max(progress, maxValue))
                                         let progressColor = yValue[j].color
                                         let emoji = yValue[j].emoji
-                                        
+                                        let title = yValue[j].title
                                         
                                         if(maxValue>0){
                                             
                                             GeometryReader{ geometry in
                                                 
-                                                VerticalProgressBar(progress: Double(progress) / Double(maxValue)
+                                                VerticalProgressBar(progress: Double(progress)
                                                                     , width: 8, height: height / heightDivider
                                                                     ,progressColor: progressColor
                                                                     ,progressBGColor: progressBGColor
                                                                     ,j:j
-                                                                    ,i:i
-                                                                    ,fontName:fontName,
+                                                                    ,i:i,
+                                                                    minValue:progress,
+                                                                    maxValue:maxValue,
+                                                                    title:title,
+                                                                    timeLine:xValue,
+                                                                    fontName:fontName,
                                                                     tooltipJIndex:$tooltipJIndex,
                                                                     tooltipIIndex:$tooltipIIndex,
                                                                     showToolTip: $showTooltip)
@@ -297,34 +303,34 @@ public struct EmojiGroupBarChart: View {
                             }
                             
                             dataSet = [0,2,4,6,8,10,12]
-                            print("err")
+                         //   print("err")
                             
                         }
                     
                 }
                 
             }
-            .overlay(alignment: .center) {
+            //.overlay(alignment: .center) {
                 
-                if(isError){
+            //      if(isError){
                     
-                    HStack{
+             //         HStack{
                         
-                        Spacer()
+            //              Spacer()
                         
-                        Text(errorMessage)
-                            .font(.custom(fontName, size: 14))
-                            .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
+             //             Text(errorMessage)
+              //                .font(.custom(fontName, size: 14))
+             //                 .foregroundColor(.red)
+               //               .multilineTextAlignment(.center)
                         
-                        Spacer()
+                //          Spacer()
                         
-                    }.padding(.horizontal)
-                        .padding(.leading,32)
-                }
+              //        }.padding(.horizontal)
+              //            .padding(.leading,32)
+              //    }
                 
                 
-            }
+             // }
             
             
         }.padding()
@@ -385,8 +391,23 @@ public struct EmojiGroupBarChart: View {
     
     func findMaxValue(){
         
-        let maxValues = yValues.flatMap { $0.map { $0.totalProgress } }.max() ?? 0
+        let maxValues1 = yValues.flatMap { $0.map { $0.totalProgress } }.max() ?? 0
+        let maxValues2 = yValues.flatMap { $0.map { $0.progress } }.max() ?? 0
         
+        var maxValues = 0.0
+        
+        if(maxValues1>maxValues2){
+            
+            maxValues = maxValues1
+            
+        }else{
+            
+            maxValues = maxValues2
+            
+        }
+         
+
+         
         if maxValues > 4 {
             
             withAnimation {
@@ -413,6 +434,7 @@ public struct EmojiGroupBarChart: View {
             
         }
         
+        //print("mainMaxValue",mainMaxValue)
         
         dataSet = generateArray1(forX: mainMaxValue)
         
@@ -514,6 +536,10 @@ struct VerticalProgressBar: View {
     var progressBGColor:Color
     var j:Int
     var i:Int
+    var minValue:Double
+    var maxValue:Double
+    var title:String
+    var timeLine:String
     var fontName:String
     @Binding var tooltipJIndex:Int
     @Binding var tooltipIIndex:Int
@@ -527,7 +553,7 @@ struct VerticalProgressBar: View {
                     .foregroundColor(progressBGColor)
                 
                 Capsule()
-                    .frame(width: width, height: CGFloat(progress) * height)
+                    .frame(width: width, height: min(CGFloat(progress) * height / CGFloat(maxValue), height))
                     .foregroundColor(Color(hex: progressColor))
             }
             
@@ -538,7 +564,7 @@ struct VerticalProgressBar: View {
                 
                 VStack(alignment: .leading,spacing:4){
                     
-                    Text("Meter Dose")
+                    Text(title)
                         .font(.custom(fontName, size: 11))
                         .fontWeight(.semibold)
                         .foregroundColor(Color(hex: progressColor))
@@ -549,7 +575,7 @@ struct VerticalProgressBar: View {
                             .font(.custom(fontName, size: 11))
                             .foregroundColor(.black.opacity(0.50))
                         
-                        Text("2")
+                        Text("\(Int(minValue))")
                             .font(.custom(fontName, size: 11))
                             .fontWeight(.semibold)
                             .foregroundColor(Color(hex: progressColor))
@@ -562,7 +588,7 @@ struct VerticalProgressBar: View {
                             .font(.custom(fontName, size: 11))
                             .foregroundColor(.black.opacity(0.50))
                         
-                        Text("4")
+                        Text("\(Int(maxValue - progress))")
                             .font(.custom(fontName, size: 11))
                             .fontWeight(.semibold)
                             .foregroundColor(.black)
@@ -571,11 +597,11 @@ struct VerticalProgressBar: View {
                     
                     HStack{
                         
-                        Text("Timeline: 12m")
+                        Text("Timeline:")
                             .font(.custom(fontName, size: 11))
                             .foregroundColor(.black.opacity(0.50))
                         
-                        Text("4")
+                        Text(timeLine)
                             .font(.custom(fontName, size: 11))
                             .fontWeight(.semibold)
                             .foregroundColor(.black)
@@ -624,8 +650,8 @@ extension Color {
 
 @available(iOS 17.0, *)
 #Preview {
-    EmojiGroupBarChart(yValues: .constant([[.init(progress: 1,totalProgress: 2,color: "#FA6418"),.init(progress: 1,totalProgress: 4,color: "#BD013C")],
-                                           [.init(progress: 2,totalProgress: 0,color: "#FA6418"),.init(progress: 1,totalProgress: 4,color: "#BD013C")],
+    EmojiGroupBarChart(yValues: .constant([[.init(progress: 11,totalProgress: 6,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                            [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                            [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                            [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
