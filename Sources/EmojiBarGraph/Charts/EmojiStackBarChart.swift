@@ -74,7 +74,7 @@ public struct EmojiStackBarChart: View {
                             
                             HStack {
                                 
-                                Text("\(dataSet[i])")
+                                Text("\(dataSet[i].formatUsingAbbreviation())")
                                     .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                                     .foregroundColor(valuesColor)
                                     .frame(height: 30)
@@ -350,34 +350,31 @@ public struct EmojiStackBarChart: View {
     }
     
     func findMaxValue(){
+         
+        let maxValues1 = yValues.flatMap { $0.map { $0.totalProgress } }.max() ?? 0
+        let maxValues2 = yValues.flatMap { $0.map { $0.progress } }.max() ?? 0
         
-        //        for i in 0..<yValues.count {
-        //
-        //            let yValue = yValues[i]
-        //
-        //            let totalMaxSum = Int(yValue.compactMap { $0 }.reduce(0) { $0 + $1.totalProgress })
-        //
-        //        }
+        var maxValues = 0.0
         
-        let maxValues = yValues.map { $0.reduce(0) { $0 + $1.totalProgress } }.max() ?? 0
+        if(maxValues1>maxValues2){
+            
+            maxValues = maxValues1
+            
+        }else{
+            
+            maxValues = maxValues2
+            
+        }
         
         print("maxValues",maxValues)
-        
-        //        let maxValues = yValues.flatMap { $0.map { $0.totalProgress } }.max() ?? 0
         
         if maxValues > 4 {
             
             withAnimation {
                 
-                //                if maxValues >= 100 {
-                //
-                //                    mainMaxValue = 100
-                //
-                //                }else{
                 
                 mainMaxValue = Int(maxValues)
                 
-                //                }
             }
             
             
