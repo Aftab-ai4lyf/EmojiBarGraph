@@ -4,10 +4,10 @@
 //
 //  Created by ai4lyf on 16/05/2024.
 //
- 
+
 import Foundation
 import SwiftUI
- 
+
 @available(iOS 17.0, *)
 public struct EmojiStackBarChart: View {
     
@@ -47,7 +47,7 @@ public struct EmojiStackBarChart: View {
     
     @State var isDataLoaded = false
     
-   public var body: some View {
+    public var body: some View {
         ZStack(alignment: .bottom) {
             
             VStack(spacing: 0) {
@@ -212,16 +212,16 @@ public struct EmojiStackBarChart: View {
                                         if(maxValue>0){
                                             
                                             
-//                                            VerticalProgressBar(progress: Double(progress) / Double(maxValue), width: 8, height: height,progressColor: "#FF0000",progressBGColor: progressBGColor)
-//                                                .overlay(alignment: .top) {
-//
-//                                                    Image(.love)
-//                                                        .resizable()
-//                                                        .frame(width: CGFloat(emojiWidth), height: CGFloat(emojiHeight))
-//                                                        .padding(.top,-13)
-//
-//
-//                                                }
+                                            //                                            VerticalProgressBar(progress: Double(progress) / Double(maxValue), width: 8, height: height,progressColor: "#FF0000",progressBGColor: progressBGColor)
+                                            //                                                .overlay(alignment: .top) {
+                                            //
+                                            //                                                    Image(.love)
+                                            //                                                        .resizable()
+                                            //                                                        .frame(width: CGFloat(emojiWidth), height: CGFloat(emojiHeight))
+                                            //                                                        .padding(.top,-13)
+                                            //
+                                            //
+                                            //                                                }
                                             
                                         }
                                         
@@ -369,15 +369,15 @@ public struct EmojiStackBarChart: View {
             
             withAnimation {
                 
-                if maxValues >= 100 {
-                    
-                    mainMaxValue = 100
-                    
-                }else{
-                    
-                    mainMaxValue = Int(maxValues)
-                    
-                }
+                //                if maxValues >= 100 {
+                //
+                //                    mainMaxValue = 100
+                //
+                //                }else{
+                
+                mainMaxValue = Int(maxValues)
+                
+                //                }
             }
             
             
@@ -415,11 +415,29 @@ public struct EmojiStackBarChart: View {
     }
     
     
-    
-    
-    
-    
     func generateArray1(forX x: Int) -> [Int] {
+        var array = [Int](repeating: 1, count: 7)
+        let valueToAdd = (x - 1) / 5
+        
+        heightDivider = Double(valueToAdd + 1)
+        print("heightDivider",heightDivider,"-",x)
+        
+        for i in 0..<array.count {
+            var oldValue = array[i]
+            if i > 0 {
+                oldValue = array[i-1]
+                oldValue += valueToAdd
+                array[i] += oldValue
+            } else {
+                array[i] = 0
+            }
+        }
+        return array
+    }
+    
+    
+    
+    func generateArray2(forX x: Int) -> [Int] {
         var array = [Int](repeating: 1, count: 7) // Initializing an array with six 1s
         
         // Determine the value to add based on the value of x
@@ -491,28 +509,28 @@ public struct EmojiStackBarChart: View {
 }
 
 
- 
+
 @available(iOS 17.0, *)
 extension EmojiStackBarChart {
-   
+    
     func setYAxisTitle(_ title: String) -> EmojiStackBarChart {
         EmojiStackBarChart(
-           yValues: $yValues,
-           xValues: xValues,
-           showEmoji: showEmoji,
-           yAxisTitle: title
-       )
-   }
+            yValues: $yValues,
+            xValues: xValues,
+            showEmoji: showEmoji,
+            yAxisTitle: title
+        )
+    }
     
     func setValuesColor(_ color: Color) -> EmojiStackBarChart {
         EmojiStackBarChart(
-           yValues: $yValues,
-           xValues: xValues,
-           showEmoji: showEmoji,
-           valuesColor: color,
-           yAxisTitle: yAxisTitle
-       )
-   }
+            yValues: $yValues,
+            xValues: xValues,
+            showEmoji: showEmoji,
+            valuesColor: color,
+            yAxisTitle: yAxisTitle
+        )
+    }
     
     func setLinesColor(_ color: Color) -> EmojiStackBarChart {
         
@@ -553,7 +571,7 @@ extension EmojiStackBarChart {
             fontName: name,
             yAxisTitle: yAxisTitle
         )
-         
+        
     }
     
     func setYAxisTitleSize(_ size: Int) -> EmojiStackBarChart {
@@ -586,7 +604,7 @@ extension EmojiStackBarChart {
             yAxisTitleSize: yAxisTitleSize,
             yAxisValuesSize: size
         )
-         
+        
     }
     
     func setEmojiHeight(_ size: Int) -> EmojiStackBarChart {

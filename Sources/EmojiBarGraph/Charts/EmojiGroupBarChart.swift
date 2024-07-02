@@ -8,6 +8,36 @@
 import Foundation
 import SwiftUI
 
+extension Int {
+    func formatUsingAbbreviation() -> String {
+        let num = abs(Double(self))
+        let sign = (self < 0) ? "-" : ""
+        
+        switch num {
+        case 1_000_000_000...:
+            let formatted = num / 1_000_000_000
+            return "\(sign)\(formatted.rounded(toPlaces: 1))B"
+        case 1_000_000...:
+            let formatted = num / 1_000_000
+            return "\(sign)\(formatted.rounded(toPlaces: 1))M"
+        case 1_000...:
+            let formatted = num / 1_000
+            return "\(sign)\(formatted.rounded(toPlaces: 1))K"
+        case 0...:
+            return "\(self)"
+            
+        default:
+            return "\(sign)\(self)"
+        }
+    }
+}
+
+extension Double {
+    func rounded(toPlaces places:Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
 
 @available(iOS 17.0, *)
 public struct EmojiGroupBarChart: View {
@@ -64,19 +94,24 @@ public struct EmojiGroupBarChart: View {
                 
                 HStack(spacing: 0){
                     
-                    Text(yAxisTitle ?? "")
-                        .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
-                        .rotationEffect(Angle(degrees: 270))
-                        .foregroundColor(valuesColor)
-                        .fixedSize()
-                        .frame(width: 0, height: 0)
-                        .padding(.trailing,8)
-                        .onTapGesture {
-                            
-                            let i = yValues[1][1].totalProgress
-                            yValues[1][1].totalProgress = i+1
-                            
-                        }
+                    
+                    if let title = yAxisTitle {
+                        
+                        Text(title)
+                            .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
+                            .rotationEffect(Angle(degrees: 270))
+                            .foregroundColor(valuesColor)
+                            .fixedSize()
+                            .frame(width: 20, height: 0)
+                            .onTapGesture {
+                                
+                                let i = yValues[1][1].totalProgress
+                                yValues[1][1].totalProgress = i+1
+                                
+                            }
+                        
+                        
+                    }
                     
                     VStack(spacing: 0){
                         
@@ -85,7 +120,7 @@ public struct EmojiGroupBarChart: View {
                             
                             HStack {
                                 
-                                Text("\(dataSet[i])")
+                                Text("\(dataSet[i].formatUsingAbbreviation())")
                                     .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                                     .foregroundColor(valuesColor)
                                     .frame(height: 30)
@@ -131,7 +166,7 @@ public struct EmojiGroupBarChart: View {
                                         
                                         let maxValue = yValue[j].totalProgress
                                         let progress = yValue[j].progress
-//                                        let height = Double(30 * progress > maxValue ? progress : maxValue)
+                                        //                                        let height = Double(30 * progress > maxValue ? progress : maxValue)
                                         let height = Double(30 * max(progress, maxValue))
                                         let progressColor = yValue[j].color
                                         let emoji = yValue[j].emoji
@@ -141,48 +176,54 @@ public struct EmojiGroupBarChart: View {
                                             
                                             GeometryReader{ geometry in
                                                 
-                                                VerticalProgressBar(progress: Double(progress)
-                                                                    , width: 8, height: height / heightDivider
-                                                                    ,progressColor: progressColor
-                                                                    ,progressBGColor: progressBGColor
-                                                                    ,j:j
-                                                                    ,i:i,
-                                                                    minValue:progress,
-                                                                    maxValue:maxValue,
-                                                                    title:title,
-                                                                    timeLine:xValue,
-                                                                    fontName:fontName,
-                                                                    tooltipJIndex:$tooltipJIndex,
-                                                                    tooltipIIndex:$tooltipIIndex,
-                                                                    showToolTip: $showTooltip)
-                                                .zIndex(Double(-j))
+                                                VStack{
+                                                    
+                                                    Spacer()
+                                                    VerticalProgressBar(progress: Double(progress)
+                                                                        , width: 8, height: height / heightDivider
+                                                                        ,progressColor: progressColor
+                                                                        ,progressBGColor: progressBGColor
+                                                                        ,j:j
+                                                                        ,i:i,
+                                                                        minValue:progress,
+                                                                        maxValue:maxValue,
+                                                                        title:title,
+                                                                        timeLine:xValue,
+                                                                        fontName:fontName,
+                                                                        tooltipJIndex:$tooltipJIndex,
+                                                                        tooltipIIndex:$tooltipIIndex,
+                                                                        showToolTip: $showTooltip)
+                                                    .zIndex(Double(-j))
+                                                    
+                                                    .overlay(alignment: .top) {
+                                                        
+                                                        if(showEmoji){
+                                                            
+                                                            Image(emoji)
+                                                                .resizable()
+                                                                .frame(width: CGFloat(emojiWidth), height: CGFloat(emojiHeight))
+                                                                .padding(.top,-10)
+                                                            
+                                                            
+                                                        }
+                                                        
+                                                    }
+                                                    .onTapGesture{
+                                                        
+                                                        withAnimation {
+                                                            
+                                                            tooltipJIndex = j
+                                                            tooltipIIndex = i
+                                                            showTooltip = true
+                                                            
+                                                        }
+                                                        
+                                                        
+                                                    }
+                                                    
+                                                }
                                                 
-                                                .overlay(alignment: .top) {
-                                                    
-                                                    if(showEmoji){
-                                                        
-                                                        Image(emoji)
-                                                            .resizable()
-                                                            .frame(width: CGFloat(emojiWidth), height: CGFloat(emojiHeight))
-                                                            .padding(.top,-10)
-                                                        
-                                                        
-                                                    }
-                                                    
-                                                }
-                                                .onTapGesture{
-                                                    
-                                                    withAnimation {
-                                                        
-                                                        tooltipJIndex = j
-                                                        tooltipIIndex = i
-                                                        showTooltip = true
-                                                        
-                                                    }
-                                                    
-                                                    
-                                                }
-                                            }.frame(width: 8, height:  height / heightDivider)
+                                            }.frame(width: 8, height:  height / heightDivider + 16)
                                             
                                             
                                             
@@ -303,7 +344,7 @@ public struct EmojiGroupBarChart: View {
                             }
                             
                             dataSet = [0,2,4,6,8,10,12]
-                         //   print("err")
+                            //   print("err")
                             
                         }
                     
@@ -311,26 +352,26 @@ public struct EmojiGroupBarChart: View {
                 
             }
             //.overlay(alignment: .center) {
-                
+            
             //      if(isError){
-                    
-             //         HStack{
-                        
+            
+            //         HStack{
+            
             //              Spacer()
-                        
-             //             Text(errorMessage)
-              //                .font(.custom(fontName, size: 14))
-             //                 .foregroundColor(.red)
-               //               .multilineTextAlignment(.center)
-                        
-                //          Spacer()
-                        
-              //        }.padding(.horizontal)
-              //            .padding(.leading,32)
-              //    }
-                
-                
-             // }
+            
+            //             Text(errorMessage)
+            //                .font(.custom(fontName, size: 14))
+            //                 .foregroundColor(.red)
+            //               .multilineTextAlignment(.center)
+            
+            //          Spacer()
+            
+            //        }.padding(.horizontal)
+            //            .padding(.leading,32)
+            //    }
+            
+            
+            // }
             
             
         }.padding()
@@ -405,22 +446,22 @@ public struct EmojiGroupBarChart: View {
             maxValues = maxValues2
             
         }
-         
-
-         
+        
+        
+        
         if maxValues > 4 {
             
             withAnimation {
                 
-                if maxValues >= 100 {
-                    
-                    mainMaxValue = 100
-                    
-                }else{
-                    
-                    mainMaxValue = Int(maxValues)
-                    
-                }
+                //                if maxValues >= 100 {
+                //
+                //                    mainMaxValue = 100
+                //
+                //                }else{
+                //
+                mainMaxValue = Int(maxValues)
+                
+                //                }
             }
             
             
@@ -457,10 +498,28 @@ public struct EmojiGroupBarChart: View {
     
     
     
-    
-    
-    
     func generateArray1(forX x: Int) -> [Int] {
+        var array = [Int](repeating: 1, count: 7)
+        let valueToAdd = (x - 1) / 5
+        
+        heightDivider = Double(valueToAdd + 1)
+        print("heightDivider",heightDivider,"-",x)
+        
+        for i in 0..<array.count {
+            var oldValue = array[i]
+            if i > 0 {
+                oldValue = array[i-1]
+                oldValue += valueToAdd
+                array[i] += oldValue
+            } else {
+                array[i] = 0
+            }
+        }
+        return array
+    }
+    
+    
+    func generateArray2(forX x: Int) -> [Int] {
         var array = [Int](repeating: 1, count: 7) // Initializing an array with six 1s
         
         // Determine the value to add based on the value of x
@@ -513,6 +572,8 @@ public struct EmojiGroupBarChart: View {
         
         return array
     }
+    
+    
 }
 
 
