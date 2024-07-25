@@ -469,7 +469,7 @@ public struct EmojiGroupBarChart: View {
             
             withAnimation {
                 
-                mainMaxValue = 6
+                mainMaxValue = 4
                 
             }
             
