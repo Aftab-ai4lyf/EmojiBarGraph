@@ -382,7 +382,7 @@ public struct EmojiStackBarChart: View {
             
             withAnimation {
                 
-                mainMaxValue = 6
+                mainMaxValue = 4
                 
             }
             
