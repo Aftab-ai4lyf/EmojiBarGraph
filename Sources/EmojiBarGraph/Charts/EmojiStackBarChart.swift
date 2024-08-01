@@ -206,7 +206,7 @@ public struct EmojiStackBarChart: View {
                                 if(lastXValue != xValue){
                                     
                                     Text("\n\n"+xValue)
-                                        .font(.custom(fontName, size: 8))
+                                        .font(.custom(fontName, size: 12))
                                         .padding(.bottom,-4)
                                         .onAppear{
                                             
