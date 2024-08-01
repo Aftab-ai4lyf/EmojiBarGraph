@@ -276,7 +276,7 @@ public struct EmojiGroupBarChart: View {
                                 if(lastXValue != xValue){
                                     
                                     Text("\n\n"+xValue)
-                                        .font(.custom(fontName, size: 12))
+                                        .font(.custom(fontName, size: 8))
                                         .foregroundColor(valuesColor)
                                         .padding(.bottom,-4)
                                         .onAppear{
