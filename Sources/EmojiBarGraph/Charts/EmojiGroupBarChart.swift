@@ -51,7 +51,7 @@ public struct EmojiGroupBarChart: View {
     @State var tempMaxYValues:[[Int]] = [[0,0],[0,0],[0,0],[0,0]]
     var tempXValues:[String] = ["15m","30m","45m","60m"]
     
-    @State var dataSet:[Int] = []
+    @State var dataSet:[String] = []
     
     var valuesColor:Color = .black
     var linesColor:Color = .black.opacity(0.50)
@@ -95,9 +95,9 @@ public struct EmojiGroupBarChart: View {
                 HStack(spacing: 0){
                     
                     
-                    if let title = yAxisTitle {
+                    if yAxisTitle != "" {
                         
-                        Text(title)
+                        Text(yAxisTitle ?? "")
                             .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                             .rotationEffect(Angle(degrees: 270))
                             .foregroundColor(valuesColor)
@@ -118,12 +118,12 @@ public struct EmojiGroupBarChart: View {
                         
                         ForEach((0..<dataSet.count).reversed(),id: \.self){ i in
                             
-                            HStack {
+                            HStack(spacing: 4) {
                                 
-                                Text("\(dataSet[i].formatUsingAbbreviation())")
+                                Text("\(dataSet[i])")
                                     .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                                     .foregroundColor(valuesColor)
-                                    .frame(height: 30)
+                                    .frame(width: 23, height: 30)
                                 
                                 Line()
                                     .stroke(style: StrokeStyle(lineWidth: 0.5, dash: [2]))
@@ -135,7 +135,7 @@ public struct EmojiGroupBarChart: View {
                             
                         }
                         
-                    }.padding(.leading,8)
+                    }.padding(.leading,yAxisTitle == "" ? 0 : 8)
                     
                     
                 }
@@ -258,7 +258,7 @@ public struct EmojiGroupBarChart: View {
                         }
                         
                         
-                    } .padding(.leading,28)
+                    } .padding(.leading,16)
                         .id(mainMaxValue)
                     
                     
@@ -343,7 +343,7 @@ public struct EmojiGroupBarChart: View {
                                 
                             }
                             
-                            dataSet = [0,2,4,6,8,10,12]
+                            dataSet = ["0","2","4","6","8","10","12"]
                             //   print("err")
                             
                         }
@@ -448,34 +448,25 @@ public struct EmojiGroupBarChart: View {
         }
         
         
-        
-        if maxValues > 4 {
+        withAnimation {
             
-            withAnimation {
+            if maxValues >= 6 {
                 
-                //                if maxValues >= 100 {
-                //
-                //                    mainMaxValue = 100
-                //
-                //                }else{
-                //
                 mainMaxValue = Int(maxValues)
                 
-                //                }
-            }
-            
-            
-        }else{
-            
-            withAnimation {
+            }else if(maxValues > 3 && maxValues < 6){
                 
-                mainMaxValue = 4
+                mainMaxValue = Int(maxValues)
+                
+            }else{
+                
+                mainMaxValue = 3
                 
             }
             
         }
+         
         
-        //print("mainMaxValue",mainMaxValue)
         
         dataSet = generateArray1(forX: mainMaxValue)
         
@@ -483,8 +474,8 @@ public struct EmojiGroupBarChart: View {
             
             withAnimation {
                 
-                self.mainMaxValue = maxValue
-                
+                self.mainMaxValue = Int(maxValue) ?? 0
+
             }
             
         }
@@ -495,28 +486,118 @@ public struct EmojiGroupBarChart: View {
         
         
     }
-    
-    
-    
-    func generateArray1(forX x: Int) -> [Int] {
-        var array = [Int](repeating: 1, count: 7)
+
+    func generateArray1(forX x: Int) -> [String] {
+        
+        let xValue = x
+        
+        var array = [Double](repeating: 1, count: 7)
+        var stringArray:[String] = []
+        
         let valueToAdd = (x - 1) / 5
         
-        heightDivider = Double(valueToAdd + 1)
-        print("heightDivider",heightDivider,"-",x)
         
-        for i in 0..<array.count {
-            var oldValue = array[i]
-            if i > 0 {
-                oldValue = array[i-1]
-                oldValue += valueToAdd
-                array[i] += oldValue
-            } else {
-                array[i] = 0
+        
+        if(xValue == 3){
+            
+            stringArray.removeAll()
+            
+            let parts = 6
+            
+            heightDivider = Double(0.5)
+            
+            let step = Double(xValue) / Double(parts)
+            
+            for i in 0...parts {
+                
+                let value = step * Double(i)
+                
+                stringArray.append(String(format: "%.1f" ,value))
+                
             }
+            
+            
+        }else if(xValue > 3 && xValue < 6){
+            
+            stringArray.removeAll()
+            
+            let parts = 6
+            
+            let step = Double(xValue) / Double(parts)
+            
+            
+            if(xValue == 4){
+                
+                heightDivider = 0.673
+                
+            }else if(xValue == 5){
+                
+                heightDivider = 0.842
+                
+            }
+            
+            for i in 0...parts {
+                
+                let value = step * Double(i)
+                
+                stringArray.append(String(format: "%.1f" ,value))
+                
+            }
+            
+            
+        }else{
+              
+            heightDivider = Double(valueToAdd + 1)
+            
+            for i in 0..<array.count {
+                
+                var oldValue = array[i]
+                
+                if i > 0 {
+                    
+                    oldValue = array[i-1]
+                    oldValue += Double(valueToAdd)
+                    array[i] += oldValue
+                    
+                    stringArray.append(String(format: "%.0f" ,array[i]))
+                    
+                } else {
+                    
+                    array[i] = 0
+                    stringArray.append("0")
+                }
+                
+            }
+             
+            
         }
-        return array
+        
+        
+        
+        return stringArray
     }
+    
+    
+    
+    // func generateArray1(forX x: Int) -> [Int] {
+    //     var array = [Int](repeating: 1, count: 7)
+    //     let valueToAdd = (x - 1) / 5
+        
+    //     heightDivider = Double(valueToAdd + 1)
+    //     print("heightDivider",heightDivider,"-",x)
+        
+    //     for i in 0..<array.count {
+    //         var oldValue = array[i]
+    //         if i > 0 {
+    //             oldValue = array[i-1]
+    //             oldValue += valueToAdd
+    //             array[i] += oldValue
+    //         } else {
+    //             array[i] = 0
+    //         }
+    //     }
+    //     return array
+    // }
     
     
     func generateArray2(forX x: Int) -> [Int] {
