@@ -42,6 +42,8 @@ public struct EmojiStackBarChart: View {
     @State var lastValue:Double = 0
     
     @State var mainMaxValue = 4
+
+    @State var textWidth:CGFloat = .zero
     
     @State var isError = false
     @State var errorMessage = ""
