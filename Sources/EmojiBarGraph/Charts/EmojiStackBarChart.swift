@@ -39,6 +39,7 @@ public struct EmojiStackBarChart: View {
     var emojiWidth = 8
     
     @State var heightDivider:Double = 0
+    @State var lastValue:Double = 0
     
     @State var mainMaxValue = 4
     
@@ -46,6 +47,8 @@ public struct EmojiStackBarChart: View {
     @State var errorMessage = ""
     
     @State var isDataLoaded = false
+
+    @State var hadTitle = false
     
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -54,20 +57,30 @@ public struct EmojiStackBarChart: View {
                 
                 HStack(spacing: 0){
                     
-                    if yAxisTitle != nil {
-                       
-                        Text(yAxisTitle ?? "")
-                            .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
-                            .rotationEffect(Angle(degrees: 270))
-                            .foregroundColor(valuesColor)
-                            .fixedSize()
-                            .frame(width: 20, height: 0)
-                            .onTapGesture {
-                                
-                                let i = yValues[1][1].totalProgress
-                                yValues[1][1].totalProgress = i+1
-                                
-                            }
+                    if let title = yAxisTitle {
+                        
+                        if title != "" {
+                            
+                            Text(title)
+                                .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
+                                .rotationEffect(Angle(degrees: 270))
+                                .foregroundColor(valuesColor)
+                                .fixedSize()
+                                .frame(width: 20, height: 0)
+                                .onTapGesture {
+                                    
+                                    let i = yValues[1][1].totalProgress
+                                    yValues[1][1].totalProgress = i+1
+                                    
+                                }.onAppear{
+                                    
+                                    hadTitle = true
+                                    
+                                }
+                            
+                            
+                            
+                        }
                         
                     }
                     
@@ -81,7 +94,7 @@ public struct EmojiStackBarChart: View {
                                 Text("\(dataSet[i])")
                                     .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                                     .foregroundColor(valuesColor)
-                                    .frame(width: 23, height: 30)
+                                    .frame(width: textWidth,height: 30,alignment: .trailing)
                                 
                                 Line()
                                     .stroke(style: StrokeStyle(lineWidth: 0.5, dash: [2]))
@@ -93,12 +106,38 @@ public struct EmojiStackBarChart: View {
                             
                         }
                         
-                    }.padding(.leading,yAxisTitle == nil ? 0 : 8)
+                    }.padding(.leading,hadTitle ? 8 : 0)
                     
                     
                 }
                 
                 
+                
+            }.overlay{
+                
+                Text(String(format: "%.1f" ,lastValue))
+                    .opacity(0)
+                    .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
+                    .background{
+                        
+                        GeometryReader { geo in
+                            
+                            Color.clear
+                                .onAppear{
+                                    
+                                    textWidth = CGFloat(geo.size.width)
+                                    
+                                    if(lastValue > 6){
+                                        
+                                        textWidth-=10
+                                        
+                                    }
+                                    
+                                }
+                            
+                        }
+                        
+                    }.id(lastValue)
                 
             }
             .overlay(alignment: .bottom) {
@@ -388,17 +427,13 @@ public struct EmojiStackBarChart: View {
         dataSet.removeAll()
         
         dataSet = generateArray1(forX: mainMaxValue)
-         
+
+          
+        lastValue = Double(dataSet[dataSet.count - 1]) ?? 0.0
+       
         
-        if let maxValue = dataSet.last {
-            
-            withAnimation {
-                
-                self.mainMaxValue = Int(maxValue) ?? 0
-                
-            }
-            
-        }
+        self.mainMaxValue = Int(lastValue)
+         
          
         
         isDataLoaded = true
