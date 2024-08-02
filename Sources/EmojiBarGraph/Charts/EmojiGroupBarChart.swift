@@ -220,12 +220,14 @@ public struct EmojiGroupBarChart: View {
                                                 VStack{
                                                     
                                                     Spacer()
-                                                    VerticalProgressBar(progress: Double(progress) / Double(maxValue),totalProgress: maxValue
+                                                   VerticalProgressBar(progress: Double(progress) / Double(maxValue),totalProgress: maxValue
                                                                         , width: 8, height: height / heightDivider
                                                                         ,progressColor: progressColor
                                                                         ,progressBGColor: progressBGColor
                                                                         ,j:j
-                                                                        ,i:i
+                                                                        ,i:i,
+                                                                        minValue:progress,
+                                                                        maxValue:maxValue
                                                                         ,xValue:xValue
                                                                         ,title:title
                                                                         ,fontName:fontName,
@@ -234,7 +236,6 @@ public struct EmojiGroupBarChart: View {
                                                                         showToolTip: $showTooltip,
                                                                         totalYValues: $totalYValues)
                                                     .zIndex(Double(-j))
-                                                    
                                                     .overlay(alignment: .top) {
                                                         
                                                         if(showEmoji){
@@ -713,6 +714,8 @@ struct VerticalProgressBar: View {
     var progressBGColor:Color
     var j:Int
     var i:Int
+    var minValue:Double
+    var maxValue:Double
     var xValue:String
     var title:String
     var fontName:String
