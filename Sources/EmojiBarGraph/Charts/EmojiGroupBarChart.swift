@@ -90,6 +90,8 @@ public struct EmojiGroupBarChart: View {
     @State private var tooltipPosition: CGPoint = .zero
 
     @State var hadTitle = false
+
+    @State var isAbbreviated = false
     
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -169,7 +171,7 @@ public struct EmojiGroupBarChart: View {
                                     
                                     textWidth = CGFloat(geo.size.width)
                                     
-                                    if(lastValue > 6){
+                                     if(isAbbreviated){
                                         
                                         textWidth-=10
                                         
@@ -218,20 +220,19 @@ public struct EmojiGroupBarChart: View {
                                                 VStack{
                                                     
                                                     Spacer()
-                                                    VerticalProgressBar(progress: Double(progress)
+                                                    VerticalProgressBar(progress: Double(progress) / Double(maxValue),totalProgress: maxValue
                                                                         , width: 8, height: height / heightDivider
                                                                         ,progressColor: progressColor
                                                                         ,progressBGColor: progressBGColor
                                                                         ,j:j
-                                                                        ,i:i,
-                                                                        minValue:progress,
-                                                                        maxValue:maxValue,
-                                                                        title:title,
-                                                                        timeLine:xValue,
-                                                                        fontName:fontName,
+                                                                        ,i:i
+                                                                        ,xValue:xValue
+                                                                        ,title:title
+                                                                        ,fontName:fontName,
                                                                         tooltipJIndex:$tooltipJIndex,
                                                                         tooltipIIndex:$tooltipIIndex,
-                                                                        showToolTip: $showTooltip)
+                                                                        showToolTip: $showTooltip,
+                                                                        totalYValues: $totalYValues)
                                                     .zIndex(Double(-j))
                                                     
                                                     .overlay(alignment: .top) {
@@ -705,20 +706,22 @@ struct Line: Shape {
 @available(iOS 17.0, *)
 struct VerticalProgressBar: View {
     var progress: Double
+    var totalProgress: Double
     var width:Double
     var height:Double
     var progressColor:String
     var progressBGColor:Color
     var j:Int
     var i:Int
-    var minValue:Double
-    var maxValue:Double
+    var xValue:String
     var title:String
-    var timeLine:String
     var fontName:String
     @Binding var tooltipJIndex:Int
     @Binding var tooltipIIndex:Int
     @Binding var showToolTip:Bool
+    @Binding var totalYValues:Int
+    
+    @State var paddingTrailing = CGFloat(0)
     
     var body: some View {
         VStack {
@@ -733,13 +736,13 @@ struct VerticalProgressBar: View {
             }
             
         }
-        .tooltip(alignment: .top, visible: $showToolTip, backgroundColor: .white) {
+        .tooltip(alignment: .top, visible: $showToolTip,paddingTrailing: $paddingTrailing, backgroundColor: .white) {
             
             if j == tooltipJIndex && i == tooltipIIndex {
                 
                 VStack(alignment: .leading,spacing:4){
                     
-                    Text(title)
+                    Text("\(title)")
                         .font(.custom(fontName, size: 11))
                         .fontWeight(.semibold)
                         .foregroundColor(Color(hex: progressColor))
@@ -750,7 +753,7 @@ struct VerticalProgressBar: View {
                             .font(.custom(fontName, size: 11))
                             .foregroundColor(.black.opacity(0.50))
                         
-                        Text("\(Int(minValue))")
+                        Text(String(format: "%.1f", progress))
                             .font(.custom(fontName, size: 11))
                             .fontWeight(.semibold)
                             .foregroundColor(Color(hex: progressColor))
@@ -759,11 +762,11 @@ struct VerticalProgressBar: View {
                     
                     HStack{
                         
-                        Text("Remaining:")
+                        Text("Total:")
                             .font(.custom(fontName, size: 11))
                             .foregroundColor(.black.opacity(0.50))
                         
-                        Text("\(Int(maxValue - progress))")
+                        Text(String(format: "%.1f", totalProgress))
                             .font(.custom(fontName, size: 11))
                             .fontWeight(.semibold)
                             .foregroundColor(.black)
@@ -776,7 +779,7 @@ struct VerticalProgressBar: View {
                             .font(.custom(fontName, size: 11))
                             .foregroundColor(.black.opacity(0.50))
                         
-                        Text(timeLine)
+                        Text("\(xValue)")
                             .font(.custom(fontName, size: 11))
                             .fontWeight(.semibold)
                             .foregroundColor(.black)
@@ -786,6 +789,19 @@ struct VerticalProgressBar: View {
                 }.frame(width: 95)
                     .padding(.vertical,4)
                     .zIndex(Double(j+50))
+                    .onAppear{
+                          
+                        if(i == totalYValues-1){
+                             
+                            paddingTrailing = CGFloat(80)
+                            
+                        }else{
+                            
+                            paddingTrailing = CGFloat(0)
+                            
+                        }
+                        
+                    }
             }
             
         }
@@ -977,8 +993,8 @@ extension EmojiGroupBarChart {
 
 @available(iOS 17.0, *)
 extension View {
-    func tooltip(alignment: Edge, visible: Binding<Bool>, backgroundColor: Color = .white, @ViewBuilder tooltip: @escaping () -> some View) -> some View {
-        modifier(TooltipDisplayingModifier(alignment: alignment, visible: visible, backgroundColor: backgroundColor, tooltip: tooltip))
+    func tooltip(alignment: Edge, visible: Binding<Bool>, paddingTrailing: Binding<CGFloat> = .constant(CGFloat(0)), backgroundColor: Color = .white, @ViewBuilder tooltip: @escaping () -> some View) -> some View {
+        modifier(TooltipDisplayingModifier(alignment: alignment, visible: visible,paddingTrailing: paddingTrailing, backgroundColor: backgroundColor, tooltip: tooltip))
     }
 }
 
@@ -990,18 +1006,21 @@ private struct TooltipDisplayingModifier<Tooltip: View>: ViewModifier {
     private let backgroundColor: Color
     @ViewBuilder private let tooltip: () -> Tooltip
     @Binding private var visible: Bool
+    @Binding var paddingTrailing: CGFloat
     
-    init(alignment: Edge, visible: Binding<Bool>, backgroundColor: Color = .white, @ViewBuilder tooltip: @escaping () -> Tooltip) {
+    init(alignment: Edge, visible: Binding<Bool>, paddingTrailing: Binding<CGFloat>, backgroundColor: Color = .white, @ViewBuilder tooltip: @escaping () -> Tooltip) {
         self.alignment = alignment
         self.backgroundColor = backgroundColor
         self.tooltip = tooltip
         
         _visible = visible
+        _paddingTrailing = paddingTrailing
     }
     
     func body(content: Content) -> some View {
-        TooltipPopup(content: content, alignment: alignment, visible: $visible, backgroundColor: backgroundColor, tooltip: tooltip)
+        TooltipPopup(content: content, alignment: alignment, visible: $visible, paddingTrailing: $paddingTrailing, backgroundColor: backgroundColor, tooltip: tooltip)
     }
+    
     
 }
 
@@ -1053,6 +1072,8 @@ private struct TooltipPopup<Content: View, Tooltip: View>: View {
                 .offset(x: (alignment == .trailing) ? (hintSize.width / 2.0) + (contentSize.width / 2.0) : .zero)
                 .offset(y: (alignment == .top) ? (-hintSize.height / 2.0) - (contentSize.height / 2.0) : .zero)
                 .offset(y: (alignment == .bottom) ? (hintSize.height / 2.0) + (contentSize.height / 2.0) : .zero)
+                .padding(.trailing,paddingTrailing)
+            
         }
     }
     
@@ -1082,14 +1103,16 @@ private struct TooltipPopup<Content: View, Tooltip: View>: View {
         }
     }
     @Binding private var visible: Bool
+    @Binding var paddingTrailing: CGFloat
     
-    init(content: Content, alignment: Edge, visible: Binding<Bool>, backgroundColor: Color = .white, @ViewBuilder tooltip: @escaping () -> Tooltip) {
+    init(content: Content, alignment: Edge, visible: Binding<Bool>, paddingTrailing: Binding<CGFloat>, backgroundColor: Color = .white, @ViewBuilder tooltip: @escaping () -> Tooltip) {
         self.content = content
         self.alignment = alignment
         self.backgroundColor = backgroundColor
         self.tooltip = tooltip
         
         _visible = visible
+        _paddingTrailing = paddingTrailing
     }
     
 }
