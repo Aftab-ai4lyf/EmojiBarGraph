@@ -69,6 +69,7 @@ public struct EmojiGroupBarChart: View {
     var emojiWidth = 8
 
     @State var textWidth:CGFloat = .zero
+    @State var totalYValues = 0
     
     @State var heightDivider:Double = 0
     @State var lastValue:Double = 0
