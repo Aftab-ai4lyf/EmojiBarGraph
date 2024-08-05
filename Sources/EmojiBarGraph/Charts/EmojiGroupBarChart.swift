@@ -96,6 +96,8 @@ public struct EmojiGroupBarChart: View {
 
     @State var progressBarWidth = 8
     @State var progressSpacing = 4.0
+
+    @State var leadingGraphSpacing = 16.0
     
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -154,7 +156,7 @@ public struct EmojiGroupBarChart: View {
                             
                         }
                         
-                    }.padding(.leading,hadTitle ? 8 : 0)
+                    }.padding(.leading,hadTitle ? 4 : 0)
                     
                     
                 }
@@ -224,6 +226,7 @@ public struct EmojiGroupBarChart: View {
                                                 VStack{
                                                     
                                                     Spacer()
+
                                                    VerticalProgressBar(progress: Double(progress) / Double(maxValue),totalProgress: maxValue
                                                                         , width: CGFloat(progressBarWidth), height: height / heightDivider
                                                                         ,progressColor: progressColor
@@ -303,7 +306,7 @@ public struct EmojiGroupBarChart: View {
                         }
                         
                         
-                    } .padding(.leading,16)
+                    } .padding(.leading,CGFloat(leadingGraphSpacing))
                         .id(mainMaxValue)
                     
                     
@@ -477,6 +480,25 @@ public struct EmojiGroupBarChart: View {
     
     func findMaxValue(){
         
+         if let title = yAxisTitle {
+            
+            if title != "" {
+          
+                hadTitle = true
+                
+            }else{
+                
+                hadTitle = false
+                
+            }
+            
+        }else{
+            
+            hadTitle = false
+            
+        }
+
+
         let maxValues1 = yValues.flatMap { $0.map { $0.totalProgress } }.max() ?? 0
         let maxValues2 = yValues.flatMap { $0.map { $0.progress } }.max() ?? 0
 
@@ -487,20 +509,36 @@ public struct EmojiGroupBarChart: View {
             if(arrayCount == 4){
                 
                 progressBarWidth = 6
-                progressSpacing = 0.5
-                
+                progressSpacing = 0.5 
+
             }else if(arrayCount == 3){
                 
                 progressBarWidth = 6
-                progressSpacing = 2
-                
+                progressSpacing = 2 
+
             }else{
                 
                 progressBarWidth = 8
-                progressSpacing = 4
-                
+                progressSpacing = 4 
+
             }
         
+            
+        }
+
+        let xArrayCount = xValues.count
+        
+        if(xArrayCount >= 6 && hadTitle){
+            
+            leadingGraphSpacing = 40
+            
+        }else if(xArrayCount == 4 && hadTitle){
+            
+            leadingGraphSpacing = 26
+            
+        }else{
+            
+            leadingGraphSpacing = 16
             
         }
         
@@ -539,8 +577,46 @@ public struct EmojiGroupBarChart: View {
         
         dataSet = generateArray1(forX: mainMaxValue)
         
-         lastValue = Double(dataSet[dataSet.count - 1]) ?? 0.0
-       
+        var lastValueString = dataSet[dataSet.count - 1]
+        
+        
+        
+        
+        if(lastValueString.contains("K")){
+            
+            lastValueString = lastValueString.replacingOccurrences(of: "K", with: "")
+            
+            lastValue = Double(lastValueString) ?? 0.0
+            
+            lastValue*=1000
+            isAbbreviated = true
+            
+        }else if(lastValueString.contains("M")){
+            
+            lastValueString = lastValueString.replacingOccurrences(of: "M", with: "")
+            
+            lastValue = Double(lastValueString) ?? 0.0
+            
+            lastValue*=100000
+            isAbbreviated = true
+            
+        }else if(lastValueString.contains("B")){
+            
+            lastValueString = lastValueString.replacingOccurrences(of: "B", with: "")
+            
+            lastValue = Double(lastValueString) ?? 0.0
+            
+            lastValue*=1000000000
+            isAbbreviated = true
+            
+        }else{
+            
+            lastValue = Double(lastValueString) ?? 0.0
+            isAbbreviated = false
+            
+        }
+        
+        
         
         self.mainMaxValue = Int(lastValue)
         
@@ -622,7 +698,33 @@ public struct EmojiGroupBarChart: View {
                     oldValue += Double(valueToAdd)
                     array[i] += oldValue
                     
-                    stringArray.append(String(format: "%.0f" ,array[i]))
+                    let newValue = array[i]
+                    
+                    var newString = ""
+                    
+                    let num = abs(Double(newValue))
+                    let sign = (newValue < 0) ? "-" : ""
+                    
+                    switch num {
+                    case 1_000_000_000...:
+                        let formatted = num / 1_000_000_000
+                        newString =  "\(sign)\(formatted.rounded(toPlaces: 1))B"
+                    case 1_000_000...:
+                        let formatted = num / 1_000_000
+                        newString =  "\(sign)\(formatted.rounded(toPlaces: 1))M"
+                    case 1_000...:
+                        let formatted = num / 1_000
+                        newString =  "\(sign)\(formatted.rounded(toPlaces: 1))K"
+                    case 0...:
+                        
+                        newString = String(format: "%.1f" ,newValue)
+                        
+                    default:
+                        newString = "\(sign)\(newValue)"
+                    }
+                    
+                    
+                    stringArray.append(newString)
                     
                 } else {
                     
