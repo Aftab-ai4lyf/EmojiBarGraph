@@ -99,6 +99,9 @@ public struct EmojiGroupBarChart: View {
 
     @State var leadingGraphSpacing = 16.0
     
+    @State var heightPlus = 16.0
+
+
     public var body: some View {
         ZStack(alignment: .bottom) {
             
@@ -271,7 +274,7 @@ public struct EmojiGroupBarChart: View {
                                                     
                                                 }
                                                 
-                                            }.frame(width: 8, height:  height / heightDivider + 16)
+                                            }.frame(width: 8, height:  height / heightDivider + heightPlus)
                                             
                                             
                                             
@@ -643,6 +646,7 @@ public struct EmojiGroupBarChart: View {
             
             let parts = 6
             
+            heightPlus = 14
             heightDivider = Double(0.5)
             
             let step = Double(xValue) / Double(parts)
@@ -664,7 +668,8 @@ public struct EmojiGroupBarChart: View {
             
             let step = Double(xValue) / Double(parts)
             
-            
+            heightPlus = 16
+
             if(xValue == 4){
                 
                 heightDivider = 0.673
@@ -686,6 +691,8 @@ public struct EmojiGroupBarChart: View {
             
         }else{
               
+            heightPlus = 16
+            
             heightDivider = Double(valueToAdd + 1)
             
             for i in 0..<array.count {
