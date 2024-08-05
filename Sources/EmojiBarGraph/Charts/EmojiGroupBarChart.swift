@@ -93,6 +93,9 @@ public struct EmojiGroupBarChart: View {
     @State var hadTitle = false
 
     @State var isAbbreviated = false
+
+    @State var progressBarWidth = 8
+    @State var progressSpacing = 4.0
     
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -202,7 +205,7 @@ public struct EmojiGroupBarChart: View {
                             
                             VStack(spacing: 0) {
                                 
-                                HStack(alignment: .bottom,spacing: 4) {
+                                HStack(alignment: .bottom,spacing: CGFloat(progressSpacing)) {
                                     
                                     ForEach(0..<yValue.count,id: \.self){ j in
                                         
@@ -222,7 +225,7 @@ public struct EmojiGroupBarChart: View {
                                                     
                                                     Spacer()
                                                    VerticalProgressBar(progress: Double(progress) / Double(maxValue),totalProgress: maxValue
-                                                                        , width: 8, height: height / heightDivider
+                                                                        , width: CGFloat(progressBarWidth), height: height / heightDivider
                                                                         ,progressColor: progressColor
                                                                         ,progressBGColor: progressBGColor
                                                                         ,j:j
@@ -476,6 +479,30 @@ public struct EmojiGroupBarChart: View {
         
         let maxValues1 = yValues.flatMap { $0.map { $0.totalProgress } }.max() ?? 0
         let maxValues2 = yValues.flatMap { $0.map { $0.progress } }.max() ?? 0
+
+        yValues.forEach { barChartArray in
+        
+            let arrayCount = barChartArray.count
+            
+            if(arrayCount == 4){
+                
+                progressBarWidth = 6
+                progressSpacing = 0.5
+                
+            }else if(arrayCount == 3){
+                
+                progressBarWidth = 6
+                progressSpacing = 2
+                
+            }else{
+                
+                progressBarWidth = 8
+                progressSpacing = 4
+                
+            }
+        
+            
+        }
         
         var maxValues = 0.0
         
