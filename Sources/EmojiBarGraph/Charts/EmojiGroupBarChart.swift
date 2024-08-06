@@ -579,6 +579,8 @@ public struct EmojiGroupBarChart: View {
         
         
         dataSet = generateArray1(forX: mainMaxValue)
+
+        print("dataSet",dataSet)
         
         var lastValueString = dataSet[dataSet.count - 1]
         
