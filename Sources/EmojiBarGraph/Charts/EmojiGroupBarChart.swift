@@ -259,8 +259,12 @@ public struct EmojiGroupBarChart: View {
                                                             
                                                         }
                                                         
-                                                    }
-                                                    .onTapGesture{
+                                                    }.onAppear{
+
+                                                        print("progress",progress)
+                                                        print("maxValue",maxValue)
+            
+                                                    }.onTapGesture{
                                                         
                                                         withAnimation {
                                                             
