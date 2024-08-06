@@ -27,6 +27,8 @@ public struct EmojiChartView: View {
     
    public var emojiHeight = 8
    public var emojiWidth = 8
+
+   @State var graphUpdateId = 1
     
     // Public initializer
     public init(chartType: EmojiChartView.ChartType,
@@ -74,6 +76,8 @@ public struct EmojiChartView: View {
                     .setYAxisValuesSize(yAxisValuesSize)
                     .setEmojiHeight(emojiHeight)
                     .setEmojiWidth(emojiWidth)
+                    .id(graphUpdateId)
+             
                 
             }else if(chartType == .StackChart){
                 
@@ -87,8 +91,14 @@ public struct EmojiChartView: View {
                     .setYAxisValuesSize(yAxisValuesSize)
                     .setEmojiHeight(emojiHeight)
                     .setEmojiWidth(emojiWidth)
+                    .id(graphUpdateId)
                 
             }
+         
+        }.onChange(of: yDataList) { oldValue, newValue in
+            
+            graphUpdateId+=1
+            
         }
     }
     
