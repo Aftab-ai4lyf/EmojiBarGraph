@@ -75,6 +75,7 @@ public struct EmojiGroupBarChart: View {
     @State var lastValue:Double = 0
     
     @State var mainMaxValue = 4
+    @State var updateGraph = 1
     
     @State var isError = false
     @State var errorMessage = ""
@@ -310,7 +311,7 @@ public struct EmojiGroupBarChart: View {
                         
                         
                     } .padding(.leading,CGFloat(leadingGraphSpacing))
-                        .id(mainMaxValue)
+                        .id(updateGraph)
                     
                     
                     
@@ -627,7 +628,10 @@ public struct EmojiGroupBarChart: View {
         
         
         isDataLoaded = true
+
+        print("yDataList",yValues)
         
+        updateGraph+=1
         
     }
 
