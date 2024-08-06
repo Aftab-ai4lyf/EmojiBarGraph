@@ -881,7 +881,8 @@ struct VerticalProgressBar: View {
                     .foregroundColor(progressBGColor)
                 
                 Capsule()
-                    .frame(width: width, height: min(CGFloat(progress) * height / CGFloat(maxValue), height))
+                    .frame(width: width, height: CGFloat(progress) * height)
+                    // .frame(width: width, height: min(CGFloat(progress) * height / CGFloat(maxValue), height))
                     .foregroundColor(Color(hex: progressColor))
             }
             
