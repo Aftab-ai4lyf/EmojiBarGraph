@@ -261,8 +261,8 @@ public struct EmojiGroupBarChart: View {
                                                         
                                                     }.onAppear{
 
-                                                        print("progress",progress)
-                                                        print("maxValue",maxValue)
+                                                        // print("progress",progress)
+                                                        // print("maxValue",maxValue)
             
                                                     }.onTapGesture{
                                                         
@@ -585,7 +585,7 @@ public struct EmojiGroupBarChart: View {
         
         dataSet = generateArray1(forX: mainMaxValue)
 
-        print("dataSet",dataSet)
+        // print("dataSet",dataSet)
         
         var lastValueString = dataSet[dataSet.count - 1]
         
@@ -633,7 +633,7 @@ public struct EmojiGroupBarChart: View {
         
         isDataLoaded = true
 
-        print("yDataList",yValues)
+        // print("yDataList",yValues)
         
         updateGraph+=1
         
