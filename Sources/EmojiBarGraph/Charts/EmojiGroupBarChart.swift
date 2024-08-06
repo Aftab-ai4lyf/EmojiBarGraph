@@ -307,7 +307,7 @@ public struct EmojiGroupBarChart: View {
                             
                             
                             
-                        }
+                        }.id(updateGraph)
                         
                         
                     } .padding(.leading,CGFloat(leadingGraphSpacing))
