@@ -68,7 +68,7 @@ public struct EmojiGroupBarChart: View {
     var emojiHeight = 8
     var emojiWidth = 8
     
-    var showDecimalValues = false
+    var showDecimalValues = true
     
     @State var textWidth:CGFloat = .zero
     @State var totalYValues = 0
@@ -1031,8 +1031,7 @@ extension EmojiGroupBarChart {
             yValues: $yValues,
             xValues: xValues,
             showEmoji: showEmoji,
-            yAxisTitle: title,
-            showDecimalValues: showDecimalValues
+            yAxisTitle: title
         )
     }
     
@@ -1042,8 +1041,7 @@ extension EmojiGroupBarChart {
             xValues: xValues,
             showEmoji: showEmoji,
             valuesColor: color,
-            yAxisTitle: yAxisTitle,
-            showDecimalValues: showDecimalValues
+            yAxisTitle: yAxisTitle
         )
     }
     
@@ -1055,8 +1053,7 @@ extension EmojiGroupBarChart {
             showEmoji: showEmoji,
             valuesColor: valuesColor,
             linesColor: color,
-            yAxisTitle: yAxisTitle,
-            showDecimalValues: showDecimalValues
+            yAxisTitle: yAxisTitle
         )
         
     }
@@ -1070,8 +1067,7 @@ extension EmojiGroupBarChart {
             valuesColor: valuesColor,
             linesColor: linesColor,
             progressBGColor: color,
-            yAxisTitle: yAxisTitle,
-            showDecimalValues: showDecimalValues
+            yAxisTitle: yAxisTitle
         )
         
     }
@@ -1086,8 +1082,7 @@ extension EmojiGroupBarChart {
             linesColor: linesColor,
             progressBGColor: progressBGColor,
             fontName: name,
-            yAxisTitle: yAxisTitle,
-            showDecimalValues: showDecimalValues
+            yAxisTitle: yAxisTitle
         )
         
     }
@@ -1103,8 +1098,7 @@ extension EmojiGroupBarChart {
             progressBGColor: progressBGColor,
             fontName: fontName,
             yAxisTitle: yAxisTitle,
-            yAxisTitleSize: size,
-            showDecimalValues: showDecimalValues
+            yAxisTitleSize: size
         )
         
     }
@@ -1121,8 +1115,7 @@ extension EmojiGroupBarChart {
             fontName: fontName,
             yAxisTitle: yAxisTitle,
             yAxisTitleSize: yAxisTitleSize,
-            yAxisValuesSize: size,
-            showDecimalValues: showDecimalValues
+            yAxisValuesSize: size
         )
         
     }
@@ -1140,8 +1133,7 @@ extension EmojiGroupBarChart {
             yAxisTitle: yAxisTitle,
             yAxisTitleSize: yAxisTitleSize,
             yAxisValuesSize: yAxisValuesSize,
-            emojiHeight: size,
-            showDecimalValues: showDecimalValues
+            emojiHeight: size
         )
         
     }
@@ -1160,28 +1152,7 @@ extension EmojiGroupBarChart {
             yAxisTitleSize: yAxisTitleSize,
             yAxisValuesSize: yAxisValuesSize,
             emojiHeight: emojiHeight,
-            emojiWidth: size,
-            showDecimalValues: showDecimalValues
-        )
-        
-    }
-    
-    func showDecimalValues(_ showDecimalValues: Bool) -> EmojiGroupBarChart {
-        
-        EmojiGroupBarChart(
-            yValues: $yValues,
-            xValues: xValues,
-            showEmoji: showEmoji,
-            valuesColor: valuesColor,
-            linesColor: linesColor,
-            progressBGColor: progressBGColor,
-            fontName: fontName,
-            yAxisTitle: yAxisTitle,
-            yAxisTitleSize: yAxisTitleSize,
-            yAxisValuesSize: yAxisValuesSize,
-            emojiHeight: emojiHeight,
-            emojiWidth: emojiWidth,
-            showDecimalValues: showDecimalValues
+            emojiWidth: size
         )
         
     }

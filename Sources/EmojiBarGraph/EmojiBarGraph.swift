@@ -28,8 +28,6 @@ public struct EmojiChartView: View {
    public var emojiHeight = 8
    public var emojiWidth = 8
     
-   public var showDecimalValues = false
-    
     // Public initializer
     public init(chartType: EmojiChartView.ChartType,
                 yDataList: Binding<[[EmojiChartView.BarChart]]>,
@@ -43,8 +41,7 @@ public struct EmojiChartView: View {
                 yAxisTitleSize: Int = 12,
                 yAxisValuesSize: Int = 12,
                 emojiHeight: Int = 8,
-                emojiWidth: Int = 8,
-                showDecimalValues:Bool = false) {
+                emojiWidth: Int = 8) {
         self._yDataList = yDataList
         self.chartType = chartType
         self.xDataList = xDataList
@@ -58,7 +55,6 @@ public struct EmojiChartView: View {
         self.yAxisValuesSize = yAxisValuesSize
         self.emojiHeight = emojiHeight
         self.emojiWidth = emojiWidth
-        self.showDecimalValues = showDecimalValues
     }
     
     
@@ -77,8 +73,7 @@ public struct EmojiChartView: View {
                     .setYAxisTitleSize(yAxisTitleSize)
                     .setYAxisValuesSize(yAxisValuesSize)
                     .setEmojiHeight(emojiHeight)
-                    .setEmojiWidth(emojiWidth)
-                    .showDecimalValues(showDecimalValues)
+                    .setEmojiWidth(emojiWidth) 
                 
             }else if(chartType == .StackChart){
                 
