@@ -60,8 +60,8 @@ public struct EmojiChartView: View {
     
 
     public var body: some View {
-        ZStack {
-            
+        VStack {
+             
             if(chartType == .GroupChart){
                 
                 EmojiGroupBarChart(yValues: $yDataList, xValues: xDataList,showEmoji:showEmoji)
@@ -74,6 +74,7 @@ public struct EmojiChartView: View {
                     .setYAxisValuesSize(yAxisValuesSize)
                     .setEmojiHeight(emojiHeight)
                     .setEmojiWidth(emojiWidth)
+                    .showDecimalValues(false)
                 
             }else if(chartType == .StackChart){
                 
@@ -97,16 +98,15 @@ public struct EmojiChartView: View {
 
 @available(iOS 17.0, *)
 #Preview {
-    EmojiChartView(chartType: .StackChart,
-                   yDataList: .constant([[.init(progress: 1,totalProgress: 4,color: "#FA6418"),.init(progress: 3,totalProgress: 14,color: "#BD013C")],
+    EmojiChartView(chartType: .GroupChart,
+                   yDataList: .constant([[.init(progress: 2,totalProgress: 3,color: "#FA6418"),.init(progress: 3,totalProgress: 3,color: "#BD013C")],
+                                         [.init(progress: 3,totalProgress: 3,color: "#FA6418"),.init(progress: 3,totalProgress: 3,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                         [.init(progress: 1,totalProgress: 4,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")]]),
-                   xDataList: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-                   showEmoji: false).setYAxisTitle("Number of Puffs").setValuesColor(.black)
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")]]),
+                   xDataList: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],showEmoji: false).setYAxisTitle("Number of Puffs").setValuesColor(.black)
     
 }
 

@@ -67,7 +67,9 @@ public struct EmojiGroupBarChart: View {
     
     var emojiHeight = 8
     var emojiWidth = 8
-
+    
+    var showDecimalValues = false
+    
     @State var textWidth:CGFloat = .zero
     @State var totalYValues = 0
     
@@ -90,19 +92,20 @@ public struct EmojiGroupBarChart: View {
     @State var yOffset:CGFloat = .zero
     
     @State private var tooltipPosition: CGPoint = .zero
-
+    
     @State var hadTitle = false
-
+    
     @State var isAbbreviated = false
-
+    
     @State var progressBarWidth = 8
     @State var progressSpacing = 4.0
-
+    
     @State var leadingGraphSpacing = 16.0
     
     @State var heightPlus = 16.0
-
-
+    @State var selectedUUID = UUID()
+    
+    
     public var body: some View {
         ZStack(alignment: .bottom) {
             
@@ -181,7 +184,7 @@ public struct EmojiGroupBarChart: View {
                                     
                                     textWidth = CGFloat(geo.size.width)
                                     
-                                     if(isAbbreviated){
+                                    if(isAbbreviated){
                                         
                                         textWidth-=10
                                         
@@ -222,6 +225,7 @@ public struct EmojiGroupBarChart: View {
                                         let progressColor = yValue[j].color
                                         let emoji = yValue[j].emoji
                                         let title = yValue[j].title
+                                        let uuid = yValue[j].id
                                         
                                         if(maxValue>0){
                                             
@@ -230,23 +234,25 @@ public struct EmojiGroupBarChart: View {
                                                 VStack{
                                                     
                                                     Spacer()
-
-                                                   VerticalProgressBar(progress: Double(progress) / Double(maxValue),totalProgress: maxValue
-                                                                        , width: CGFloat(progressBarWidth), height: height / heightDivider
-                                                                        ,progressColor: progressColor
-                                                                        ,progressBGColor: progressBGColor
-                                                                        ,j:j
-                                                                        ,i:i,
+                                                    
+                                                    VerticalProgressBar(progress: Double(progress) / Double(maxValue),totalProgress: maxValue,
+                                                                        width: CGFloat(progressBarWidth), height: height / heightDivider,
+                                                                        progressColor: progressColor,
+                                                                        progressBGColor: progressBGColor,
+                                                                        j:j,
+                                                                        i:i,
                                                                         minValue:progress,
-                                                                        maxValue:maxValue
-                                                                        ,xValue:xValue
-                                                                        ,title:title
-                                                                        ,fontName:fontName,
+                                                                        maxValue:maxValue,
+                                                                        xValue:xValue,
+                                                                        title:title,
+                                                                        fontName:fontName,
+                                                                        id: uuid,
+                                                                        showDecimalValues: showDecimalValues,
                                                                         tooltipJIndex:$tooltipJIndex,
                                                                         tooltipIIndex:$tooltipIIndex,
                                                                         showToolTip: $showTooltip,
-                                                                        totalYValues: $totalYValues)
-                                                    .zIndex(Double(-j))
+                                                                        totalYValues: $totalYValues,
+                                                                        selectedUUID: $selectedUUID)
                                                     .overlay(alignment: .top) {
                                                         
                                                         if(showEmoji){
@@ -259,14 +265,31 @@ public struct EmojiGroupBarChart: View {
                                                             
                                                         }
                                                         
-                                                    }
-                                                    .onTapGesture{
+                                                    }.onAppear{
+                                                        
+                                                        // print("progress",progress)
+                                                        // print("maxValue",maxValue)
+                                                        
+                                                    }.onTapGesture{
                                                         
                                                         withAnimation {
                                                             
                                                             tooltipJIndex = j
                                                             tooltipIIndex = i
-                                                            showTooltip = true
+                                                            
+                                                            if(selectedUUID == uuid){
+                                                                
+                                                                showTooltip.toggle()
+                                                                
+                                                            }else{
+                                                                
+                                                                showTooltip = true
+                                                                
+                                                            }
+                                                            
+                                                            
+                                                            selectedUUID = uuid
+                                                             
                                                             
                                                         }
                                                         
@@ -276,6 +299,7 @@ public struct EmojiGroupBarChart: View {
                                                 }
                                                 
                                             }.frame(width: 8, height:  height / heightDivider + heightPlus)
+                                                .zIndex(Double(-j))
                                             
                                             
                                             
@@ -323,44 +347,11 @@ public struct EmojiGroupBarChart: View {
                         
                         ForEach(0..<tempYValues.count,id: \.self){ i in
                             
-                            let yValue = tempYValues[i]
                             let xValue = tempXValues[i]
                             
                             Spacer()
                             
                             VStack(spacing: 0) {
-                                
-                                HStack(alignment: .bottom,spacing: 4) {
-                                    
-                                    ForEach(0..<yValue.count,id: \.self){ j in
-                                        
-                                        let maxValue = tempMaxYValues[i][j]
-                                        let progress = yValue[j]
-                                        let height = Double(30 * maxValue)
-                                        
-                                        
-                                        
-                                        if(maxValue>0){
-                                            
-                                            
-                                            //                                            VerticalProgressBar(progress: Double(progress) / Double(maxValue), width: 8, height: height,progressColor: "#FF0000",progressBGColor: progressBGColor)
-                                            //                                                .overlay(alignment: .top) {
-                                            //
-                                            //                                                    if(showEmoji){
-                                            //                                                        Image(.love)
-                                            //                                                            .resizable()
-                                            //                                                            .frame(width: CGFloat(emojiWidth), height: CGFloat(emojiHeight))
-                                            //                                                            .padding(.top,-13)
-                                            //                                                    }
-                                            //
-                                            //                                                }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }.padding(.bottom,-8)
-                                
                                 
                                 if(lastXValue != xValue){
                                     
@@ -484,10 +475,10 @@ public struct EmojiGroupBarChart: View {
     
     func findMaxValue(){
         
-         if let title = yAxisTitle {
+        if let title = yAxisTitle {
             
             if title != "" {
-          
+                
                 hadTitle = true
                 
             }else{
@@ -501,35 +492,35 @@ public struct EmojiGroupBarChart: View {
             hadTitle = false
             
         }
-
-
+        
+        
         let maxValues1 = yValues.flatMap { $0.map { $0.totalProgress } }.max() ?? 0
         let maxValues2 = yValues.flatMap { $0.map { $0.progress } }.max() ?? 0
-
-        yValues.forEach { barChartArray in
         
+        yValues.forEach { barChartArray in
+            
             let arrayCount = barChartArray.count
             
             if(arrayCount == 4){
                 
                 progressBarWidth = 6
-                progressSpacing = 0.5 
-
+                progressSpacing = 0.5
+                
             }else if(arrayCount == 3){
                 
                 progressBarWidth = 6
-                progressSpacing = 2 
-
+                progressSpacing = 2
+                
             }else{
                 
                 progressBarWidth = 8
-                progressSpacing = 4 
-
+                progressSpacing = 4
+                
             }
-        
+            
             
         }
-
+        
         let xArrayCount = xValues.count
         
         if(xArrayCount >= 6 && hadTitle){
@@ -576,12 +567,12 @@ public struct EmojiGroupBarChart: View {
             }
             
         }
-         
+        
         
         
         dataSet = generateArray1(forX: mainMaxValue)
-
-        print("dataSet",dataSet)
+        
+        // print("dataSet",dataSet)
         
         var lastValueString = dataSet[dataSet.count - 1]
         
@@ -628,13 +619,13 @@ public struct EmojiGroupBarChart: View {
         
         
         isDataLoaded = true
-
-        print("yDataList",yValues)
+        
+        // print("yDataList",yValues)
         
         updateGraph+=1
         
     }
-
+    
     func generateArray1(forX x: Int) -> [String] {
         
         let xValue = x
@@ -661,8 +652,16 @@ public struct EmojiGroupBarChart: View {
                 
                 let value = step * Double(i)
                 
-                stringArray.append(String(format: "%.1f" ,value))
-                
+                if(showDecimalValues){
+                 
+                    stringArray.append(String(format: "%.1f" ,value))
+                    
+                }else{
+                    
+                    stringArray.append(String(format: "%.0f" ,value))
+                    
+                }
+                 
             }
             
             
@@ -675,7 +674,7 @@ public struct EmojiGroupBarChart: View {
             let step = Double(xValue) / Double(parts)
             
             heightPlus = 16
-
+            
             if(xValue == 4){
                 
                 heightDivider = 0.673
@@ -690,13 +689,21 @@ public struct EmojiGroupBarChart: View {
                 
                 let value = step * Double(i)
                 
-                stringArray.append(String(format: "%.1f" ,value))
+                if(showDecimalValues){
+                 
+                    stringArray.append(String(format: "%.1f" ,value))
+                    
+                }else{
+                    
+                    stringArray.append(String(format: "%.0f" ,value))
+                    
+                }
                 
             }
             
             
         }else{
-              
+            
             heightPlus = 16
             
             heightDivider = Double(valueToAdd + 1)
@@ -730,7 +737,15 @@ public struct EmojiGroupBarChart: View {
                         newString =  "\(sign)\(formatted.rounded(toPlaces: 1))K"
                     case 0...:
                         
-                        newString = String(format: "%.1f" ,newValue)
+                        if(showDecimalValues){
+                            
+                            newString = String(format: "%.1f" ,newValue)
+                            
+                        }else{
+                         
+                            newString = String(format: "%.0f" ,newValue)
+                            
+                        }
                         
                     default:
                         newString = "\(sign)\(newValue)"
@@ -746,7 +761,7 @@ public struct EmojiGroupBarChart: View {
                 }
                 
             }
-             
+            
             
         }
         
@@ -760,10 +775,10 @@ public struct EmojiGroupBarChart: View {
     // func generateArray1(forX x: Int) -> [Int] {
     //     var array = [Int](repeating: 1, count: 7)
     //     let valueToAdd = (x - 1) / 5
-        
+    
     //     heightDivider = Double(valueToAdd + 1)
     //     print("heightDivider",heightDivider,"-",x)
-        
+    
     //     for i in 0..<array.count {
     //         var oldValue = array[i]
     //         if i > 0 {
@@ -862,10 +877,13 @@ struct VerticalProgressBar: View {
     var xValue:String
     var title:String
     var fontName:String
+    var id:UUID
+    var showDecimalValues:Bool
     @Binding var tooltipJIndex:Int
     @Binding var tooltipIIndex:Int
     @Binding var showToolTip:Bool
     @Binding var totalYValues:Int
+    @Binding var selectedUUID:UUID
     
     @State var paddingTrailing = CGFloat(0)
     
@@ -877,80 +895,86 @@ struct VerticalProgressBar: View {
                     .foregroundColor(progressBGColor)
                 
                 Capsule()
-                    .frame(width: width, height: min(CGFloat(progress) * height / CGFloat(maxValue), height))
+                    .frame(width: width, height: CGFloat(progress) * height)
+                // .frame(width: width, height: min(CGFloat(progress) * height / CGFloat(maxValue), height))
                     .foregroundColor(Color(hex: progressColor))
             }
-            
-        }
-        .tooltip(alignment: .top, visible: $showToolTip,paddingTrailing: $paddingTrailing, backgroundColor: .white) {
-            
-            if j == tooltipJIndex && i == tooltipIIndex {
+            .tooltip(alignment: .top, visible: $showToolTip,paddingTrailing: $paddingTrailing, backgroundColor: .white) {
                 
-                VStack(alignment: .leading,spacing:4){
+                if id == selectedUUID {
                     
-                    Text("\(title)")
-                        .font(.custom(fontName, size: 11))
-                        .fontWeight(.semibold)
-                        .foregroundColor(Color(hex: progressColor))
-                    
-                    HStack{
+                    VStack(alignment: .leading,spacing:4){
                         
-                        Text("Taken:")
-                            .font(.custom(fontName, size: 11))
-                            .foregroundColor(.black.opacity(0.50))
-                        
-                        Text(String(format: "%.1f", progress))
-                            .font(.custom(fontName, size: 11))
-                            .fontWeight(.semibold)
-                            .foregroundColor(Color(hex: progressColor))
-                        
-                    }
-                    
-                    HStack{
-                        
-                        Text("Total:")
-                            .font(.custom(fontName, size: 11))
-                            .foregroundColor(.black.opacity(0.50))
-                        
-                        Text(String(format: "%.1f", totalProgress))
-                            .font(.custom(fontName, size: 11))
-                            .fontWeight(.semibold)
-                            .foregroundColor(.black)
-                        
-                    }
-                    
-                    HStack{
-                        
-                        Text("Timeline:")
-                            .font(.custom(fontName, size: 11))
-                            .foregroundColor(.black.opacity(0.50))
-                        
-                        Text("\(xValue)")
-                            .font(.custom(fontName, size: 11))
-                            .fontWeight(.semibold)
-                            .foregroundColor(.black)
-                        
-                    }
-                    
-                }.frame(width: 95)
-                    .padding(.vertical,4)
-                    .zIndex(Double(j+50))
-                    .onAppear{
-                          
-                        if(i == totalYValues-1){
-                             
-                            paddingTrailing = CGFloat(80)
-                            
-                        }else{
-                            
-                            paddingTrailing = CGFloat(0)
+                        if(title != ""){
+                         
+                            Text("\(title)")
+                                .font(.custom(fontName, size: 11))
+                                .fontWeight(.semibold)
+                                .foregroundColor(Color(hex: progressColor))
                             
                         }
                         
-                    }
+                        HStack{
+                            
+                            Text("Taken:")
+                                .font(.custom(fontName, size: 11))
+                                .foregroundColor(.black.opacity(0.50))
+                            
+                            Text(String(format: showDecimalValues ? "%.1f" : "%.0f", minValue))
+                                .font(.custom(fontName, size: 11))
+                                .fontWeight(.semibold)
+                                .foregroundColor(Color(hex: progressColor))
+                            
+                        }
+                        
+                        HStack{
+                            
+                            Text("Total:")
+                                .font(.custom(fontName, size: 11))
+                                .foregroundColor(.black.opacity(0.50))
+                            
+                            Text(String(format: showDecimalValues ? "%.1f" : "%.0f", totalProgress))
+                                .font(.custom(fontName, size: 11))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.black)
+                            
+                        }
+                        
+                        HStack{
+                            
+                            Text("Timeline:")
+                                .font(.custom(fontName, size: 11))
+                                .foregroundColor(.black.opacity(0.50))
+                            
+                            Text("\(xValue)")
+                                .font(.custom(fontName, size: 11))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.black)
+                            
+                        }
+                        
+                    }.frame(width: 95)
+                        .padding(.vertical,4)
+                        .onAppear{
+                            
+                            
+                            if(i == totalYValues-1){
+                                
+                                paddingTrailing = CGFloat(80)
+                                
+                            }else{
+                                
+                                paddingTrailing = CGFloat(0)
+                                
+                            }
+                            
+                        }
+                }
+                
             }
             
         }
+        
     }
 }
 
@@ -987,15 +1011,14 @@ extension Color {
 
 @available(iOS 17.0, *)
 #Preview {
-    EmojiGroupBarChart(yValues: .constant([[.init(progress: 11,totalProgress: 6,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")]]),
-                       xValues: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-                       showEmoji: false)
+    EmojiGroupBarChart(yValues: .constant([[.init(progress: 11,totalProgress: 12,color: "#FA6418")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")]]),
+                       xValues: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], showEmoji: false).setYAxisTitle("Number of Puffs").setValuesColor(.black)
 }
 
 
@@ -1008,7 +1031,8 @@ extension EmojiGroupBarChart {
             yValues: $yValues,
             xValues: xValues,
             showEmoji: showEmoji,
-            yAxisTitle: title
+            yAxisTitle: title,
+            showDecimalValues: showDecimalValues
         )
     }
     
@@ -1018,7 +1042,8 @@ extension EmojiGroupBarChart {
             xValues: xValues,
             showEmoji: showEmoji,
             valuesColor: color,
-            yAxisTitle: yAxisTitle
+            yAxisTitle: yAxisTitle,
+            showDecimalValues: showDecimalValues
         )
     }
     
@@ -1030,7 +1055,8 @@ extension EmojiGroupBarChart {
             showEmoji: showEmoji,
             valuesColor: valuesColor,
             linesColor: color,
-            yAxisTitle: yAxisTitle
+            yAxisTitle: yAxisTitle,
+            showDecimalValues: showDecimalValues
         )
         
     }
@@ -1044,7 +1070,8 @@ extension EmojiGroupBarChart {
             valuesColor: valuesColor,
             linesColor: linesColor,
             progressBGColor: color,
-            yAxisTitle: yAxisTitle
+            yAxisTitle: yAxisTitle,
+            showDecimalValues: showDecimalValues
         )
         
     }
@@ -1059,7 +1086,8 @@ extension EmojiGroupBarChart {
             linesColor: linesColor,
             progressBGColor: progressBGColor,
             fontName: name,
-            yAxisTitle: yAxisTitle
+            yAxisTitle: yAxisTitle,
+            showDecimalValues: showDecimalValues
         )
         
     }
@@ -1075,7 +1103,8 @@ extension EmojiGroupBarChart {
             progressBGColor: progressBGColor,
             fontName: fontName,
             yAxisTitle: yAxisTitle,
-            yAxisTitleSize: size
+            yAxisTitleSize: size,
+            showDecimalValues: showDecimalValues
         )
         
     }
@@ -1092,7 +1121,8 @@ extension EmojiGroupBarChart {
             fontName: fontName,
             yAxisTitle: yAxisTitle,
             yAxisTitleSize: yAxisTitleSize,
-            yAxisValuesSize: size
+            yAxisValuesSize: size,
+            showDecimalValues: showDecimalValues
         )
         
     }
@@ -1110,7 +1140,8 @@ extension EmojiGroupBarChart {
             yAxisTitle: yAxisTitle,
             yAxisTitleSize: yAxisTitleSize,
             yAxisValuesSize: yAxisValuesSize,
-            emojiHeight: size
+            emojiHeight: size,
+            showDecimalValues: showDecimalValues
         )
         
     }
@@ -1129,7 +1160,28 @@ extension EmojiGroupBarChart {
             yAxisTitleSize: yAxisTitleSize,
             yAxisValuesSize: yAxisValuesSize,
             emojiHeight: emojiHeight,
-            emojiWidth: size
+            emojiWidth: size,
+            showDecimalValues: showDecimalValues
+        )
+        
+    }
+    
+    func showDecimalValues(_ showDecimalValues: Bool) -> EmojiGroupBarChart {
+        
+        EmojiGroupBarChart(
+            yValues: $yValues,
+            xValues: xValues,
+            showEmoji: showEmoji,
+            valuesColor: valuesColor,
+            linesColor: linesColor,
+            progressBGColor: progressBGColor,
+            fontName: fontName,
+            yAxisTitle: yAxisTitle,
+            yAxisTitleSize: yAxisTitleSize,
+            yAxisValuesSize: yAxisValuesSize,
+            emojiHeight: emojiHeight,
+            emojiWidth: emojiWidth,
+            showDecimalValues: showDecimalValues
         )
         
     }
