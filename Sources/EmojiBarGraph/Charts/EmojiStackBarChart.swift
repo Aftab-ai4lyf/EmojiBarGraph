@@ -616,18 +616,18 @@ public struct EmojiStackBarChart: View {
 }
 
 
-@available(iOS 17.0, *)
-#Preview {
-    EmojiStackBarChart(yValues: .constant([[.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 4,totalProgress: 4,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")]]),
-                       xValues: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-                       showEmoji: false)
-}
+//@available(iOS 17.0, *)
+//#Preview {
+//    EmojiStackBarChart(yValues: .constant([[.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 4,totalProgress: 4,color: "#BD013C")],
+//                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+//                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+//                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+//                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+//                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+//                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")]]),
+//                       xValues: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+//                       showEmoji: false)
+//}
 
 
 
