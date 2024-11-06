@@ -1053,13 +1053,13 @@ extension Color {
 
 @available(iOS 17.0, *)
 #Preview {
-    EmojiGroupBarChart(yValues: .constant([[.init(progress: 11,totalProgress: 12,color: "#FA6418")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")],
-                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418")]]),
+    EmojiGroupBarChart(yValues: .constant([[.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 1512,color: "#BD013C")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
+                                           [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")]]),
                        xValues: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], showEmoji: false).setYAxisTitle("Number of Puffs").setValuesColor(.black)
 }
 
