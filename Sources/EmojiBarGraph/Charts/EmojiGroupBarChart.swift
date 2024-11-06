@@ -781,10 +781,10 @@ public struct EmojiGroupBarChart: View {
                 // If any value contains "k", convert all to "k" format
             return array.map { value in
 
-                if let number = Double(value.replacingOccurrences(of: "k", with: "")) {
+                if let number = Double(value.replacingOccurrences(of: "K", with: "")) {
 
                         // If the value has "k" already, keep it as is
-                    return value.contains("k") ? value : String(format: "%.1fk", number / 1000)
+                    return value.contains("K") ? value : String(format: "%.1fK", number / 1000)
 
                 } else {
 

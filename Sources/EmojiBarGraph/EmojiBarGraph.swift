@@ -98,7 +98,7 @@ public struct EmojiChartView: View {
 @available(iOS 17.0, *)
 #Preview {
     EmojiChartView(chartType: .GroupChart,
-                   yDataList: .constant([[.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 830,color: "#BD013C")],
+                   yDataList: .constant([[.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 1512,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
