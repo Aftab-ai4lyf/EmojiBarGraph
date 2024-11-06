@@ -39,6 +39,8 @@ extension Double {
     }
 }
 
+
+
 @available(iOS 17.0, *)
 public struct EmojiGroupBarChart: View {
     
@@ -148,11 +150,12 @@ public struct EmojiGroupBarChart: View {
                             
                             HStack(spacing: 4) {
                                 
-                                Text("\(dataSet[i])")
+                                Text(removeTrailingZero(from: dataSet[i]))
                                     .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                                     .foregroundColor(valuesColor)
                                     .frame(width: textWidth,height: 30,alignment: .trailing)
-                                
+                                    .opacity(i == 0 ? 0 : 1)
+
                                 Line()
                                     .stroke(style: StrokeStyle(lineWidth: 0.5, dash: [2]))
                                     .frame(height: 0.5)
@@ -765,11 +768,40 @@ public struct EmojiGroupBarChart: View {
             
         }
         
-        
-        
-        return stringArray
+        let newArray = convertToKFormat(stringArray)
+
+        return newArray
     }
-    
+
+    func convertToKFormat(_ array: [String]) -> [String] {
+        // Check if any value contains "k"
+        let containsK = array.contains { $0.contains("K") }
+
+        if containsK {
+                // If any value contains "k", convert all to "k" format
+            return array.map { value in
+
+                if let number = Double(value.replacingOccurrences(of: "k", with: "")) {
+
+                        // If the value has "k" already, keep it as is
+                    return value.contains("k") ? value : String(format: "%.1fk", number / 1000)
+
+                } else {
+
+                    return value
+
+                }
+
+            }
+
+        }else{
+
+            return array
+
+        }
+
+    }
+
     
     
     // func generateArray1(forX x: Int) -> [Int] {
@@ -791,7 +823,10 @@ public struct EmojiGroupBarChart: View {
     //     }
     //     return array
     // }
-    
+
+
+
+
     
     func generateArray2(forX x: Int) -> [Int] {
         var array = [Int](repeating: 1, count: 7) // Initializing an array with six 1s
@@ -846,8 +881,15 @@ public struct EmojiGroupBarChart: View {
         
         return array
     }
-    
-    
+
+    func removeTrailingZero(from numberString: String) -> String {
+        if numberString.hasSuffix(".0") {
+            // Remove the trailing ".0" if present
+            return String(numberString.dropLast(2))
+        }
+        return numberString
+    }
+
 }
 
 

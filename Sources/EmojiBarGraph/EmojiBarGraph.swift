@@ -73,7 +73,7 @@ public struct EmojiChartView: View {
                     .setYAxisTitleSize(yAxisTitleSize)
                     .setYAxisValuesSize(yAxisValuesSize)
                     .setEmojiHeight(emojiHeight)
-                    .setEmojiWidth(emojiWidth) 
+                    .setEmojiWidth(emojiWidth)
                 
             }else if(chartType == .StackChart){
                 
@@ -98,8 +98,8 @@ public struct EmojiChartView: View {
 @available(iOS 17.0, *)
 #Preview {
     EmojiChartView(chartType: .GroupChart,
-                   yDataList: .constant([[.init(progress: 2,totalProgress: 3,color: "#FA6418"),.init(progress: 3,totalProgress: 3,color: "#BD013C")],
-                                         [.init(progress: 3,totalProgress: 3,color: "#FA6418"),.init(progress: 3,totalProgress: 3,color: "#BD013C")],
+                   yDataList: .constant([[.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 830,color: "#BD013C")],
+                                         [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
                                          [.init(progress: 0,totalProgress: 0,color: "#FA6418"),.init(progress: 0,totalProgress: 0,color: "#BD013C")],
@@ -168,4 +168,5 @@ extension EmojiChartView {
     }
     
 }
+ 
  
