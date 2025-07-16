@@ -11,12 +11,15 @@ public struct EmojiChartView: View {
     public var xDataList:[String]
     
    public var showEmoji:Bool
-    
+   public var showYValues: Bool
+    public var showLines: Bool
    public var yAxisTitle:String?
-    
+   public  var showAreaMark: Bool
    public var valuesColor:Color = .black
+   public  var gradientColors: [Color] = [.blue.opacity(0.4), .clear]
     public var linesColor:Color = .black.opacity(0.50)
     
+    public var arealinesColor:Color = .black.opacity(0.50)
     public var progressBGColor = Color.gray.opacity(0.40)
     
    public var fontName = ""
@@ -33,9 +36,14 @@ public struct EmojiChartView: View {
                 yDataList: Binding<[[EmojiChartView.BarChart]]>,
                 xDataList: [String],
                 showEmoji: Bool,
+                showYValues: Bool,
+                showLines: Bool,
+               showAreaMark: Bool,
                 yAxisTitle: String? = nil,
                 valuesColor: Color = .black,
                 linesColor: Color = .black.opacity(0.50),
+                arealinesColor: Color = .black.opacity(0.50),
+                gradientColors:[Color] = [.blue.opacity(0.4), .clear],
                 progressBGColor: Color = Color.gray.opacity(0.40),
                 fontName: String = "",
                 yAxisTitleSize: Int = 12,
@@ -46,9 +54,14 @@ public struct EmojiChartView: View {
         self.chartType = chartType
         self.xDataList = xDataList
         self.showEmoji = showEmoji
+        self.showYValues = showYValues
+        self.showLines = showLines
+        self.showAreaMark = showAreaMark
+        self.gradientColors = gradientColors
         self.yAxisTitle = yAxisTitle
         self.valuesColor = valuesColor
         self.linesColor = linesColor
+        self.arealinesColor = arealinesColor
         self.progressBGColor = progressBGColor
         self.fontName = fontName
         self.yAxisTitleSize = yAxisTitleSize
@@ -64,7 +77,7 @@ public struct EmojiChartView: View {
              
             if(chartType == .GroupChart){
                 
-                EmojiGroupBarChart(yValues: $yDataList, xValues: xDataList,showEmoji:showEmoji)
+                EmojiGroupBarChart(yValues: $yDataList, xValues: xDataList,showEmoji:showEmoji, showYValues:showYValues, showLines:showLines,showAreaMark:showAreaMark,arealinesColor:arealinesColor, gradientColors:gradientColors)
                     .setYAxisTitle(yAxisTitle ?? "")
                     .setValuesColor(valuesColor)
                     .setLinesColor(linesColor)
@@ -77,7 +90,7 @@ public struct EmojiChartView: View {
                 
             }else if(chartType == .StackChart){
                 
-                EmojiStackBarChart(yValues: $yDataList, xValues: xDataList,showEmoji:showEmoji)
+                EmojiStackBarChart(yValues: $yDataList, xValues: xDataList,showEmoji:showEmoji,showYValues:showYValues,showLines:showLines,showAreaMark:showAreaMark,arealinesColor: arealinesColor,gradientColors:gradientColors)
                     .setYAxisTitle(yAxisTitle ?? "")
                     .setValuesColor(valuesColor)
                     .setLinesColor(linesColor)
@@ -115,55 +128,55 @@ extension EmojiChartView {
     
     func setYAxisTitle(_ title: String) -> EmojiChartView {
      
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, yAxisTitle: title)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark, yAxisTitle: title)
         
     }
     
     func setValuesColor(_ color: Color) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: color)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: color)
         
     }
     
     func setLinesColor(_ color: Color) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: color)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: color)
         
     }
     
     func setBarBackgroundColor(_ color: Color) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: color)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: color)
         
     }
     
     func setFontName(_ name: String) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: name)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: name)
         
     }
     
     func setYAxisTitleSize(_ size: Int) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: size)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues:showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: size)
         
     }
     
     func setYAxisValuesSize(_ size: Int) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: yAxisTitleSize,yAxisValuesSize: size)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues:showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: yAxisTitleSize,yAxisValuesSize: size)
         
     }
     
     func setEmojiHeight(_ size: Int) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: yAxisTitleSize,yAxisValuesSize: yAxisValuesSize,emojiHeight: size)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues:showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: yAxisTitleSize,yAxisValuesSize: yAxisValuesSize,emojiHeight: size)
         
     }
     
     func setEmojiWidth(_ size: Int) -> EmojiChartView {
         
-        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: yAxisTitleSize,yAxisValuesSize: yAxisValuesSize,emojiHeight: emojiHeight,emojiWidth: size)
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues:showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: yAxisTitleSize,yAxisValuesSize: yAxisValuesSize,emojiHeight: emojiHeight,emojiWidth: size)
         
     }
     
