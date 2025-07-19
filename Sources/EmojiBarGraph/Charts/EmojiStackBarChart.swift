@@ -61,44 +61,67 @@ public struct EmojiStackBarChart: View {
     
     @State var hadTitle = false
     
+    @State var totalLines = 6
+    
+    @State var totalHeight: CGFloat = 300
+    
+    @State var innerLinesHeight: Int = 60
+    @State var bottomPadding: Double = 30.0
+    
     public var body: some View {
-        ZStack(alignment: .bottom) {
-          
-            yAxisView()
-                .padding(.leading, hadTitle ? 8 : 0)
-                .overlay {
-                    
-                    yAxisTextWidthOverlay()
-                    
-                }.overlay(alignment: .bottom) {
-                    
-                    barsView()
-                    
-                }.overlay(alignment: .center) {
-                    
-                    errorView()
-                    
-                }.overlay {
-                    
-                    GeometryReader { geo in
+        GeometryReader { geo in
+            
+            ZStack(alignment: .bottom) {
+                
+                yAxisView()
+                    .padding(.leading, hadTitle ? 8 : 0)
+                    .overlay {
                         
-                        areaMarkView()
-                            .frame(width: geo.size.width - 7)
-                            .frame(height: geo.size.height - 33)
-                            .padding(.top, 13)
+                        yAxisTextWidthOverlay()
+                        
+                    }.overlay(alignment: .bottom) {
+                        
+                        barsView()
+                        
+                    }.overlay(alignment: .center) {
+                        
+                        errorView()
+                        
+                    }.overlay {
+                        
+                        GeometryReader { geo in
+                            
+                            areaMarkView()
+                                .frame(width: geo.size.width - 7)
+                                .frame(height: geo.size.height - CGFloat(innerLinesHeight + 2))
+                                .padding(.top, CGFloat((innerLinesHeight / 2)))
+                                .onAppear{
+                                    
+                                    print("height: \(geo.size.height), height divider: \(heightDivider)")
+                                    
+                                }.onChange(of: geo.size.height) { oldValue, newValue in
+                                    
+                                    print("on change height: \(geo.size.height), height divider: \(heightDivider)")
+                                    
+                                }
+                            
+                        }
                         
                     }
                 
+            }.padding()
+                .onChange(of: yValues) { oldValue, newValue in
+                    
+                    validate()
+                    
+                }.onAppear {
+                    
+                    totalHeight = geo.size.height
+                    validate()
+                    
+                    print("Parent height: \(geo.size.height)")
+                    
                 }
-            
-        }.padding()
-        .onChange(of: yValues) { oldValue, newValue in
-            
-            validate()
-            
-        }.onAppear {
-            
-            validate()
             
         }
         
@@ -144,12 +167,12 @@ public struct EmojiStackBarChart: View {
                                 Text("\(dataSet[i])")
                                     .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                                     .foregroundColor(valuesColor)
-                                    .frame(width: textWidth, height: 30, alignment: .trailing)
+                                    .frame(width: textWidth, height: CGFloat(innerLinesHeight), alignment: .trailing)
 
                             } else {
 
                                 Spacer()
-                                    .frame(width: 0, height: 30)
+                                    .frame(width: 0, height: CGFloat(innerLinesHeight))
 
                             }
 
@@ -225,7 +248,7 @@ public struct EmojiStackBarChart: View {
                         ZStack(alignment: .bottom) {
                             
                             let totalMaxSum = Int(yValue.compactMap { $0 }.reduce(0) { $0 + $1.totalProgress })
-                            let totalHeight = Double(30 * totalMaxSum)
+                            let totalHeight = Double(innerLinesHeight * totalMaxSum)
                             
                             Capsule()
                                 .frame(width: 12, height: totalHeight / heightDivider)
@@ -239,7 +262,7 @@ public struct EmojiStackBarChart: View {
                                 
                                     let maxValue = yValue[j].totalProgress
                                     let progress = yValue[j].progress
-                                    let height = Double(30 * progress)
+                                    let height = Double(Double(innerLinesHeight) * progress)
                                     let color = yValue[j].color
                                     
                                     VStack {
@@ -258,7 +281,7 @@ public struct EmojiStackBarChart: View {
                                 
                             }
                             
-                        }.padding(.bottom, -20)
+                        }.padding(.bottom, CGFloat(bottomPadding))
                         
                         if lastXValue != xValue {
                         
@@ -287,8 +310,7 @@ public struct EmojiStackBarChart: View {
                 var lastXValue = ""
                 
                 ForEach(0..<tempYValues.count, id: \.self) { i in
-                    
-                    let yValue = tempYValues[i]
+                     
                     let xValue = tempXValues[i]
                     
                     Spacer()
@@ -334,6 +356,7 @@ public struct EmojiStackBarChart: View {
     
     @ViewBuilder
     private func errorView() -> some View {
+        
         if isError {
            
             HStack {
@@ -414,9 +437,10 @@ public struct EmojiStackBarChart: View {
                 
             }.chartYScale(domain: firstValue...lastValue)
             .chartPlotStyle { plot in
+             
                 plot.background(.clear)
-            }
-            .chartXAxis(.hidden)
+           
+            }.chartXAxis(.hidden)
             .chartYAxis(.hidden)
             .background(.clear)
             .padding(.leading, showYValues ? 53 : 40)
@@ -488,9 +512,15 @@ public struct EmojiStackBarChart: View {
             
         }
         
-        print("Max Value: \(maxValues), Max Value 1: \(maxValues1), Max Value 2: \(maxValues2)")
+        innerLinesHeight = Int(totalHeight - 40) / totalLines
+        
+        bottomPadding = 0.5 * Double(innerLinesHeight) - 36
+        
+        
+        print("Max Value: \(maxValues), Max Value 1: \(maxValues1), Max Value 2: \(maxValues2), Bottom Padding: \(bottomPadding), innerLinesHeight: \(innerLinesHeight), totalHeight: \(totalHeight)")
         
         withAnimation {
+           
             if maxValues >= 6 {
                 
                 mainMaxValue = Int(maxValues)
@@ -512,6 +542,7 @@ public struct EmojiStackBarChart: View {
         lastValue = Double(dataSet[dataSet.count - 1]) ?? 0.0
         self.mainMaxValue = Int(lastValue)
         isDataLoaded = true
+        
     }
     
         // MARK: - Generate Array
@@ -519,12 +550,11 @@ public struct EmojiStackBarChart: View {
     func generateArray1(forX x: Int) -> [String] {
         let xValue = x
      
-        var array = [Double](repeating: 1, count: 6)
+        var array = [Double](repeating: 1, count: totalLines)
         var stringArray: [String] = []
         
         let valueToAdd = (x - 1) / 5
-//        let valueToAdd = 1
-        
+ 
         print("Value to add: \(valueToAdd)")
     
         if xValue == 3 {
@@ -891,16 +921,16 @@ extension EmojiStackBarChart {
         yDataList: $yValues,
         xDataList: xDataList,
         showEmoji: false,
-        showYValues: false,
-        showLines: false,
+        showYValues: true,
+        showLines: true,
         showAreaMark: true,
         yAxisTitle: .none,
         valuesColor: .black,
         linesColor: .black,
         arealinesColor: .black.opacity(0.4),
         gradientColors: [.red.opacity(0.4), .red.opacity(0.3), .red.opacity(0.2), .red.opacity(0.1), .clear]
-    )
-    
+    ).frame(height: 400)
+        .background(.yellow.opacity(0.1))
     
 }
 
