@@ -1372,7 +1372,7 @@ public struct EmojiStackBarChart: View {
             .chartXAxis(.hidden)
             .chartYAxis(.hidden)
             .background(.clear)
-            .padding(.leading, showYValues ? 50 : 0)
+            .padding(.leading, showYValues ? 50 : 40)
         }
     }
     
