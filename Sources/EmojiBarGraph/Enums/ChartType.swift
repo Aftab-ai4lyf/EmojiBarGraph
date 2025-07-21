@@ -12,7 +12,7 @@ extension EmojiChartView {
   
     public enum ChartType{
         
-        case GroupChart, StackChart
+        case GroupChart, StackChart, GroupStackChart
         
     }
     
