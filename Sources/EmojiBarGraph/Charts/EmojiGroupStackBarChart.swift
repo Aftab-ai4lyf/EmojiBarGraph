@@ -335,6 +335,7 @@ public struct EmojiGroupStackBarChart: View {
                         Text("\n\n" + xValue)
                             .font(.custom(fontName, size: 8))
                             .padding(.bottom, -4)
+                            .offset(y: -15)
                             .onAppear {
                                 
                                 lastXValue = xValue
