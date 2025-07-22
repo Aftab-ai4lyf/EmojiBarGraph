@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 import Charts
 
+
+
 @available(iOS 17.0, *)
 public struct EmojiGroupStackBarChart: View {
     
@@ -38,6 +40,8 @@ public struct EmojiGroupStackBarChart: View {
     
     var arealinesColor: Color
     var gradientColors: [Color]
+    
+    var enableHorizontalScroll:Bool = true
     
     var tempYValues: [[Int]] = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
     @State var tempMaxYValues: [[Int]] = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
@@ -81,9 +85,19 @@ public struct EmojiGroupStackBarChart: View {
     @State var selectedBarChart: EmojiChartView.BarChart? = nil
     @State var tooltipPosition: CGPoint = .zero
     
+    @State var isPortrait = UIDevice.current.orientation.isPortrait ? true : false
+    
     public var body: some View {
         
         GeometryReader { geo in
+             
+            let alignment: Alignment = isPortrait ? .center : .bottomLeading
+            
+            let screenWidth = geo.size.width
+            let baseWidth = max(screenWidth, CGFloat(yValues.count) * 12)
+            
+            let contentWidth = baseWidth + (isPortrait ? 30 : -50)
+            
             
             ZStack(alignment: .center) {
                  
@@ -110,46 +124,50 @@ public struct EmojiGroupStackBarChart: View {
                         
                         if !isError {
                             
-                            GeometryReader { geoInner in
+                            
+                            ScrollView(.horizontal) {
                                 
-                                GroupStackBarView()
-                                    .background(
-                                        
-                                        Group {
+                                ZStack(alignment: alignment) {
+                                    
+                                    GroupStackBarView()
+                                        .background(
                                             
-                                            if showTooltip {
+                                            Group {
                                                 
-                                                Color.black.opacity(0.3)
-                                                    .contentShape(Rectangle())
-                                                    .onTapGesture {
-                                                        
-                                                        withAnimation {
+                                                if showTooltip {
+                                                    
+                                                    Color.black.opacity(0.001)
+                                                        .contentShape(Rectangle())
+                                                        .onTapGesture {
                                                             
-                                                            tooltipPosition = .zero
-                                                            showTooltip = false
+                                                            withAnimation {
+                                                                
+                                                                tooltipPosition = .zero
+                                                                showTooltip = false
+                                                                
+                                                            }
                                                             
                                                         }
-                                                        
-                                                    }
+                                                    
+                                                }
                                                 
                                             }
                                             
-                                        }
+                                        )
+                                    
+                                    if showAreaMark && !isError {
                                         
-                                    ).overlay {
-                                        
-                                        if showAreaMark && !isError {
-                                            
-                                            AreaMarkLineChart()
-                                                .frame(width: geoInner.size.width)
-                                                .frame(height: geoInner.size.height - CGFloat(innerLinesHeight + 2))
-                                                .padding(.leading, showYValues ? 26 : 9)
-                                            
-                                        }
-                                        
+                                        AreaMarkLineChart()
+                                            .frame(width: contentWidth)
+                                            .frame(height: geo.size.height - (isPortrait ? 35 : 40))
+                                            .padding(.leading, showYValues ? 26 : (isPortrait ? 13 : 56))
+                                            .padding(.bottom, isPortrait ? 0 : 54)
                                     }
+                                    
+                                }
                                 
-                            }
+                            }.scrollIndicators(.hidden)
+                                .scrollDisabled(!enableHorizontalScroll)
                             
                         }else {
                             
@@ -190,16 +208,18 @@ public struct EmojiGroupStackBarChart: View {
             }.coordinateSpace(name: "ChartArea")
                 .padding()
                 .offset(y: -58)
-                .onChange(of: yValues) { oldValue, newValue in
+                .onOrientationChange { orientation in
+                   
+                    isPortrait = orientation.isPortrait
+                    
+                }.onChange(of: yValues) { oldValue, newValue in
                     
                     validate()
                     
                 }.onAppear {
-                    
+                      
                     totalHeight = geo.size.height
                     validate()
-                    
-                    print("Total Height: \(totalHeight)")
                     
                 }
             
@@ -365,8 +385,8 @@ public struct EmojiGroupStackBarChart: View {
     
     @ViewBuilder
     func GroupStackBarView() -> some View {
-        
-        HStack(alignment: .bottom, spacing: 0) {
+         
+        HStack(alignment: .bottom, spacing: 8) {
             
             var lastXValue = ""
             
@@ -533,6 +553,8 @@ public struct EmojiGroupStackBarChart: View {
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .background(.clear)
+        .allowsHitTesting(false)
+        
     }
     
         // Validate the data if both xDataList and yDataList had same length
