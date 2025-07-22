@@ -85,10 +85,8 @@ public struct EmojiGroupStackBarChart: View {
         
         GeometryReader { geo in
             
-            ZStack(alignment: .bottom) {
-                
-                
-                
+            ZStack(alignment: .center) {
+                 
                 VStack(spacing: 0) {
                     
                     HStack(spacing: 0) {
@@ -112,31 +110,46 @@ public struct EmojiGroupStackBarChart: View {
                         
                         if !isError {
                             
-                            GroupStackBarView()
-                                .background(
-                                    
-                                    Group {
+                            GeometryReader { geoInner in
+                                
+                                GroupStackBarView()
+                                    .background(
                                         
-                                        if showTooltip {
+                                        Group {
                                             
-                                            Color.black.opacity(0.001)
-                                                .contentShape(Rectangle())
-                                                .onTapGesture {
-                                                    
-                                                    withAnimation {
+                                            if showTooltip {
+                                                
+                                                Color.black.opacity(0.3)
+                                                    .contentShape(Rectangle())
+                                                    .onTapGesture {
                                                         
-                                                        tooltipPosition = .zero
-                                                        showTooltip = false
+                                                        withAnimation {
+                                                            
+                                                            tooltipPosition = .zero
+                                                            showTooltip = false
+                                                            
+                                                        }
                                                         
                                                     }
-                                                    
-                                                }
+                                                
+                                            }
+                                            
+                                        }
+                                        
+                                    ).overlay {
+                                        
+                                        if showAreaMark && !isError {
+                                            
+                                            AreaMarkLineChart()
+                                                .frame(width: geoInner.size.width)
+                                                .frame(height: geoInner.size.height - CGFloat(innerLinesHeight + 2))
+                                                .padding(.leading, showYValues ? 26 : 9)
                                             
                                         }
                                         
                                     }
-                                    
-                                )
+                                
+                            }
                             
                         }else {
                             
@@ -147,22 +160,6 @@ public struct EmojiGroupStackBarChart: View {
                     }.overlay(alignment: .center) {
                         
                         ErrorView()
-                        
-                    }.overlay {
-                        
-                        if showAreaMark && !isError {
-                            
-                            GeometryReader { geo in
-                                
-                                AreaMarkLineChart()
-                                    .frame(width: geo.size.width - (showYValues ? 0 : 12))
-                                    .frame(height: geo.size.height - CGFloat(innerLinesHeight + 2))
-                                    .padding(.top, CGFloat((innerLinesHeight / 2)))
-                                    .padding(.leading, showYValues ? 26 : 12)
-                                
-                            }
-                            
-                        }
                         
                     }.overlay(alignment: .topLeading) {
                         
@@ -192,6 +189,7 @@ public struct EmojiGroupStackBarChart: View {
                 
             }.coordinateSpace(name: "ChartArea")
                 .padding()
+                .offset(y: -58)
                 .onChange(of: yValues) { oldValue, newValue in
                     
                     validate()
@@ -200,6 +198,8 @@ public struct EmojiGroupStackBarChart: View {
                     
                     totalHeight = geo.size.height
                     validate()
+                    
+                    print("Total Height: \(totalHeight)")
                     
                 }
             
@@ -335,7 +335,6 @@ public struct EmojiGroupStackBarChart: View {
                         Text("\n\n" + xValue)
                             .font(.custom(fontName, size: 8))
                             .padding(.bottom, -4)
-                            .offset(y: -15)
                             .onAppear {
                                 
                                 lastXValue = xValue
@@ -439,6 +438,7 @@ public struct EmojiGroupStackBarChart: View {
                         Text("\n\n" + xValue)
                             .font(.custom(fontName, size: 12))
                             .padding(.bottom, -4)
+                            .offset(y: -30)
                             .onAppear {
                                 
                                 lastXValue = xValue
@@ -487,54 +487,52 @@ public struct EmojiGroupStackBarChart: View {
     @ViewBuilder
     func AreaMarkLineChart() -> some View {
         
+        let gradientStops = areaMarkSwiftUIColors.enumerated().map { index, color in
+            
+            let baseOpacity = 0.15
+            let minOpacity = 0.1
+            
+            let opacity = baseOpacity - (Double(index) / Double(areaMarkSwiftUIColors.count - 1)) * (baseOpacity - minOpacity)
+            
+            return Gradient.Stop(color: color.opacity(opacity), location: Double(index) / Double(areaMarkSwiftUIColors.count - 1))
+        }
+        
+        let gradient = LinearGradient(
+            gradient: Gradient(stops: gradientStops),
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+        
         Chart {
             
-            ForEach(0..<areaMarkDataSetList.count, id: \.self) { i in
+            ForEach(Array(areaMarkDataSetList.enumerated()), id: \.offset) { item in
                 
-                let progress = areaMarkDataSetList[i]
-                
-                let gradientStops = areaMarkSwiftUIColors.enumerated().map { index, color in
-                    
-                    let baseOpacity = 0.15
-                    let minOpacity = 0.1
-                    
-                    let opacity = baseOpacity - (Double(index) / Double(areaMarkSwiftUIColors.count - 1)) * (baseOpacity - minOpacity)
-                    
-                    return Gradient.Stop(color: color.opacity(opacity), location: Double(index) / Double(areaMarkSwiftUIColors.count - 1))
-                }
+                let i = item.offset
+                let progress = item.element
                 
                 AreaMark(
-                    x: .value("Day", i),
+                    x: .value("Day", Double(i)),
                     y: .value("Line", progress)
                 )
                 .interpolationMethod(.catmullRom)
-                .foregroundStyle(
-                    LinearGradient(
-                        gradient: Gradient(stops: gradientStops),
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .foregroundStyle(gradient)
                 
                 LineMark(
-                    x: .value("Day", i),
+                    x: .value("Day", Double(i)),
                     y: .value("Line", progress)
                 )
                 .interpolationMethod(.catmullRom)
                 .foregroundStyle(arealinesColor)
-                
             }
-            
-        }.chartYScale(domain: firstDataSetValue...lastDataSetValue)
-            .chartPlotStyle { plot in
-                
-                plot.background(.clear)
-                
-            }.chartXAxis(.hidden)
-            .chartYAxis(.hidden)
-            .background(.clear)
-        
-        
+        }
+        .chartXScale(domain: 0.0...Double(xValues.count - 1))
+        .chartYScale(domain: firstDataSetValue...lastDataSetValue)
+        .chartPlotStyle { plot in
+            plot.background(.clear)
+        }
+        .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
+        .background(.clear)
     }
     
         // Validate the data if both xDataList and yDataList had same length
@@ -592,7 +590,7 @@ public struct EmojiGroupStackBarChart: View {
             
         }
         
-        innerLinesHeight = Int(totalHeight - 40) / totalLines
+        innerLinesHeight = (Int(totalHeight) / totalLines) + 18
         
         bottomPadding = 0.5 * Double(innerLinesHeight) - 36
         
@@ -884,14 +882,15 @@ struct EmojiTooltipView: View {
     ]
     
     var xDataList: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    
     EmojiChartView(
         chartType: .GroupStackChart,
         yDataList: $yValues,
         xDataList: xDataList,
         showEmoji: false,
         showYValues: false,
-        showLines: false,
-        showAreaMark: false,
+        showLines: true,
+        showAreaMark: true,
         yAxisTitle: "",
         valuesColor: .black,
         linesColor: .black,
