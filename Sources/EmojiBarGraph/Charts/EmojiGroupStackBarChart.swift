@@ -96,7 +96,7 @@ public struct EmojiGroupStackBarChart: View {
             let screenWidth = geo.size.width
             let baseWidth = max(screenWidth, CGFloat(yValues.count) * 12)
             
-            let contentWidth = baseWidth + (isPortrait ? 30 : -50)
+            let contentWidth = baseWidth + (isPortrait ? 60 : -50)
             
             
             ZStack(alignment: .center) {
@@ -159,7 +159,7 @@ public struct EmojiGroupStackBarChart: View {
                                         
                                         AreaMarkLineChart()
                                             .frame(width: contentWidth)
-                                            .frame(height: geo.size.height - (isPortrait ? 35 : 40))
+                                            .frame(height: geo.size.height - (isPortrait ? 20 : 40))
                                             .padding(.leading, showYValues ? 26 : (isPortrait ? 13 : 56))
                                             .padding(.bottom, isPortrait ? 0 : 54)
                                     }
