@@ -65,6 +65,10 @@ extension EmojiChartView {
         
     }
     
+    func enableHorizontalScroll(_ enable: Bool) -> EmojiChartView {
+        EmojiChartView(chartType: chartType, yDataList: $yDataList, xDataList: xDataList, showEmoji: showEmoji, showYValues:showYValues, showLines: showLines, showAreaMark: showAreaMark,yAxisTitle:yAxisTitle, valuesColor: valuesColor,linesColor: linesColor,progressBGColor: progressBGColor,fontName: fontName,yAxisTitleSize: yAxisTitleSize,yAxisValuesSize: yAxisValuesSize,emojiHeight: emojiHeight,emojiWidth: emojiWidth,enableHorizontalScroll: enable)
+         
+    }
 }
 
 
@@ -487,6 +491,8 @@ extension EmojiGroupBarChart {
             gradientColors: gradientColors
         )
     }
+    
+    
 }
 
 
@@ -502,7 +508,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitle: title,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setValuesColor(_ color: Color) -> EmojiGroupStackBarChart {
@@ -516,7 +523,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitle: yAxisTitle,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setLinesColor(_ color: Color) -> EmojiGroupStackBarChart {
@@ -530,7 +538,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitle: yAxisTitle,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setBarBackgroundColor(_ color: Color) -> EmojiGroupStackBarChart {
@@ -543,7 +552,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitle: yAxisTitle,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setFontName(_ name: String) -> EmojiGroupStackBarChart {
@@ -557,7 +567,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitle: yAxisTitle,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setYAxisTitleSize(_ size: Int) -> EmojiGroupStackBarChart {
@@ -571,7 +582,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitleSize: size,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setYAxisValuesSize(_ size: Int) -> EmojiGroupStackBarChart {
@@ -585,7 +597,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisValuesSize: size,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setEmojiHeight(_ size: Int) -> EmojiGroupStackBarChart {
@@ -599,7 +612,8 @@ extension EmojiGroupStackBarChart {
                                 emojiHeight: size,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func setEmojiWidth(_ size: Int) -> EmojiGroupStackBarChart {
@@ -613,7 +627,8 @@ extension EmojiGroupStackBarChart {
                                 emojiWidth: size,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func showLine(_ show: Bool) -> EmojiGroupStackBarChart {
@@ -626,7 +641,8 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitle: yAxisTitle,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
     
     func showYValue(_ show: Bool) -> EmojiGroupStackBarChart {
@@ -639,8 +655,24 @@ extension EmojiGroupStackBarChart {
                                 yAxisTitle: yAxisTitle,
                                 showAreaMark: showAreaMark,
                                 arealinesColor: arealinesColor,
-                                gradientColors: gradientColors)
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enableHorizontalScroll)
     }
+    
+    func enableHorizontalScroll(_ enable: Bool) -> EmojiGroupStackBarChart {
+        EmojiGroupStackBarChart(yValues: $yValues,
+                                xValues: xValues,
+                                showEmoji: showEmoji,
+                                showYValues: showYValues,
+                                showLines: showLines,
+                                progressBGColor: progressBGColor,
+                                yAxisTitle: yAxisTitle,
+                                showAreaMark: showAreaMark,
+                                arealinesColor: arealinesColor,
+                                gradientColors: gradientColors,
+                                enableHorizontalScroll: enable)
+    }
+    
 }
 
 
@@ -819,3 +851,32 @@ extension Double {
     }
 }
 
+
+@available(iOS 17.0, *)
+struct OrientationPreferenceKey: PreferenceKey {
+    static var defaultValue: UIDeviceOrientation = .portrait
+    static func reduce(value: inout UIDeviceOrientation, nextValue: () -> UIDeviceOrientation) {
+        value = nextValue()
+    }
+}
+
+@available(iOS 17.0, *)
+struct OrientationReader: ViewModifier {
+    @State private var orientation: UIDeviceOrientation = .portrait
+    
+    func body(content: Content) -> some View {
+        content
+            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+                orientation = UIDevice.current.orientation
+            }
+            .preference(key: OrientationPreferenceKey.self, value: orientation)
+    }
+}
+
+@available(iOS 17.0, *)
+extension View {
+    func onOrientationChange(perform: @escaping (UIDeviceOrientation) -> Void) -> some View {
+        self.modifier(OrientationReader())
+            .onPreferenceChange(OrientationPreferenceKey.self, perform: perform)
+    }
+}
