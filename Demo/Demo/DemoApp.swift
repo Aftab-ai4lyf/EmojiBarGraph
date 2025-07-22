@@ -5,13 +5,13 @@
 //  Created by AI4LYF on 14/07/2025.
 //
 
-import SwiftUI
+import SwiftUI 
 
 @main
 struct DemoApp: App {
     var body: some Scene {
         WindowGroup {
-            CoughStackGraphView()
+            ContentView()
         }
     }
 }
