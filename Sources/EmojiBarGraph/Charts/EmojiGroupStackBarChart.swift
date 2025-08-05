@@ -85,12 +85,14 @@ public struct EmojiGroupStackBarChart: View {
     @State var selectedBarChart: EmojiChartView.BarChart? = nil
     @State var tooltipPosition: CGPoint = .zero
     
-    @State var isPortrait = UIDevice.current.orientation.isPortrait ? true : false
+    @State var isPortrait = true
+    
+    @State var paddingLeading:CGFloat = 50
     
     public var body: some View {
         
         GeometryReader { geo in
-             
+            
             let alignment: Alignment = isPortrait ? .center : .bottomLeading
             
             let screenWidth = geo.size.width
@@ -100,7 +102,7 @@ public struct EmojiGroupStackBarChart: View {
             
             
             ZStack(alignment: .center) {
-                 
+                
                 VStack(spacing: 0) {
                     
                     HStack(spacing: 0) {
@@ -155,13 +157,14 @@ public struct EmojiGroupStackBarChart: View {
                                             
                                         )
                                     
-                                    if showAreaMark && !isError {
+                                    if showAreaMark && !isError && isDataLoaded {
                                         
                                         AreaMarkLineChart()
                                             .frame(width: contentWidth)
-                                            .frame(height: geo.size.height - (isPortrait ? 20 : 40))
-                                            .padding(.leading, showYValues ? 26 : (isPortrait ? 13 : 56))
+                                            .frame(height: geo.size.height - 20)
+                                            .padding(.leading, showYValues ? 26 : paddingLeading)
                                             .padding(.bottom, isPortrait ? 0 : 54)
+                                        
                                     }
                                     
                                 }
@@ -209,7 +212,7 @@ public struct EmojiGroupStackBarChart: View {
                 .padding()
                 .offset(y: -58)
                 .onOrientationChange { orientation in
-                   
+                    
                     isPortrait = orientation.isPortrait
                     
                 }.onChange(of: yValues) { oldValue, newValue in
@@ -217,7 +220,7 @@ public struct EmojiGroupStackBarChart: View {
                     validate()
                     
                 }.onAppear {
-                      
+                    
                     totalHeight = geo.size.height
                     validate()
                     
@@ -359,6 +362,7 @@ public struct EmojiGroupStackBarChart: View {
                                 
                                 lastXValue = xValue
                                 
+                                
                             }
                         
                     }
@@ -385,7 +389,7 @@ public struct EmojiGroupStackBarChart: View {
     
     @ViewBuilder
     func GroupStackBarView() -> some View {
-         
+        
         HStack(alignment: .bottom, spacing: 8) {
             
             var lastXValue = ""
@@ -502,7 +506,9 @@ public struct EmojiGroupStackBarChart: View {
             
         }.frame(width: 12, height: height / heightDivider)
         
+        
     }
+    
     
     @ViewBuilder
     func AreaMarkLineChart() -> some View {
@@ -541,8 +547,9 @@ public struct EmojiGroupStackBarChart: View {
                     x: .value("Day", Double(i)),
                     y: .value("Line", progress)
                 )
-                .interpolationMethod(.catmullRom)
+                .interpolationMethod(.monotone)
                 .foregroundStyle(arealinesColor)
+                
             }
         }
         .chartXScale(domain: 0.0...Double(xValues.count - 1))
@@ -556,7 +563,7 @@ public struct EmojiGroupStackBarChart: View {
         .allowsHitTesting(false)
         
     }
-    
+        //
         // Validate the data if both xDataList and yDataList had same length
     func validate() {
         
@@ -616,6 +623,21 @@ public struct EmojiGroupStackBarChart: View {
         
         bottomPadding = 0.5 * Double(innerLinesHeight) - 36
         
+        let firstValuesCount = yValues.first?.count ?? 0
+        
+        if firstValuesCount == 1 {
+            
+            paddingLeading = 50
+            
+        }else if firstValuesCount == 2 {
+            
+            paddingLeading = 30
+            
+        }else if firstValuesCount == 3 {
+            
+            paddingLeading = 10
+            
+        }
         
         print("Max Value: \(maxValues), Max Value 1: \(maxValues1), Max Value 2: \(maxValues2), Bottom Padding: \(bottomPadding), innerLinesHeight: \(innerLinesHeight), totalHeight: \(totalHeight)")
         
@@ -638,16 +660,28 @@ public struct EmojiGroupStackBarChart: View {
         }
         
         dataSet.removeAll()
-        dataSet = generateArray1(forX: mainMaxValue)
+        dataSet = generateArray1(forX: mainMaxValue,maxValue: maxValues)
         
         lastValue = Double(dataSet[dataSet.count - 1]) ?? 0.0
         
         self.mainMaxValue = Int(lastValue)
         
+        var valueToAddAreaMark: Double = 0
+        
+        if maxValues <= 3 {
+            
+            valueToAddAreaMark = 0
+            
+        }else{
+            
+            valueToAddAreaMark = 0.5
+            
+        }
+        
         let newYValues2 = yValues.map { dayArray in
             dayArray.map { group in
                 group.map { bar in
-                    bar.totalProgress > 0 ? bar.totalProgress + 0.5 : 0
+                    bar.totalProgress > 0 ? bar.totalProgress + valueToAddAreaMark : 0
                 }.reduce(0, +)
             }.max() ?? 0
         }
@@ -664,21 +698,21 @@ public struct EmojiGroupStackBarChart: View {
         let areaMarkColorList: [String] = yValues.map { dayArray in
             dayArray.map { group in
                 let sum = group.map { bar in
-                    bar.totalProgress > 0 ? bar.totalProgress + 0.5 : 0
+                    bar.totalProgress > 0 ? bar.totalProgress + valueToAddAreaMark : 0
                 }.reduce(0, +)
                 
                     // Use first bar color in group (or fallback to default)
-                let groupColor = group.first?.color ?? "#000000"
+                let groupColor = group.first?.color ?? ""
                 
                 return (sum: sum, color: groupColor)
             }
                 // Get the color of the group with the highest sum
-            .max { $0.sum < $1.sum }?.color ?? "#000000"
+            .max { $0.sum < $1.sum }?.color ?? ""
         }
         
         areaMarkSwiftUIColors = areaMarkColorList.map { Color(hex: $0) }
         
-        print("Area Mark SwiftUI Colors: \(areaMarkSwiftUIColors)")
+            //        print("Area Mark SwiftUI Colors: \(areaMarkSwiftUIColors)")/]
         
         print("Area Mark Data set list: \(areaMarkDataSetList)")
         
@@ -688,24 +722,40 @@ public struct EmojiGroupStackBarChart: View {
     
         // MARK: - Generate Array
     
-    func generateArray1(forX x: Int) -> [String] {
+    func generateArray1(forX x: Int,maxValue: Double) -> [String] {
         let xValue = x
         
         var array = [Double](repeating: 1, count: totalLines)
         var stringArray: [String] = []
         
-        let valueToAdd = (x - 1) / 5
+        let valueToAdd = (x - 1) / totalLines + 1
         
-        print("Value to add: \(valueToAdd)")
+        print("Value to add: \(valueToAdd), X Value: \(xValue)")
         
         if xValue == 3 {
             
-            stringArray.removeAll()
-            let parts = 6
-            heightDivider = Double(0.5)
-            let step = Double(xValue) / Double(parts)
+            print("1")
             
-            for i in 0...parts {
+            stringArray.removeAll()
+            
+            if maxValue == 1 {
+                
+                heightDivider = Double(0.67)
+                
+            }else if maxValue == 2 {
+                
+                heightDivider = Double(0.8)
+                
+            }else {
+                
+                heightDivider = Double(0.5)
+                
+            }
+            
+            
+            let step = Double(xValue) / Double(totalLines)
+            
+            for i in 0..<totalLines {
                 
                 let value = step * Double(i)
                 
@@ -715,11 +765,11 @@ public struct EmojiGroupStackBarChart: View {
             
         } else if xValue > 3 && xValue < 6 {
             
+            print("2")
+            
             stringArray.removeAll()
             
-            let parts = 6
-            
-            let step = Double(xValue) / Double(parts)
+            let step = Double(xValue) / Double(totalLines)
             
             if xValue == 4 {
                 
@@ -731,7 +781,7 @@ public struct EmojiGroupStackBarChart: View {
                 
             }
             
-            for i in 0...parts {
+            for i in 0...totalLines {
                 
                 let value = step * Double(i)
                 stringArray.append(String(format: "%.1f", value))
@@ -739,6 +789,8 @@ public struct EmojiGroupStackBarChart: View {
             }
             
         } else {
+            
+            print("3")
             
             heightDivider = Double(valueToAdd + 1)
             
@@ -762,8 +814,10 @@ public struct EmojiGroupStackBarChart: View {
                 
             }
             
-            print("array", array)
+            
         }
+        
+        print("stringArray", stringArray)
         
         return stringArray
     }
@@ -829,78 +883,112 @@ struct EmojiTooltipView: View {
 
 @available(iOS 17.0, *)
 #Preview {
+        //    @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
+        //
+        //        [   // Mon
+        //            [.init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Magnesium", type: "Supplement"),
+        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin C", type: "Medication"),
+        //             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Pycnogenol", type: "Medication"),
+        //             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
+        //
+        //            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Broccoli", type: "Food")]
+        //
+        //        ],
+        //
+        //        [   // Tue
+        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Magnesium", type: "Supplement"),
+        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
+        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication"),
+        //             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin D", type: "Medication")],
+        //
+        //            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Apple", type: "Food")]
+        //        ],
+        //
+        //        [   // Wed
+        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Paracetamol", type: "Medication"),
+        //             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Cough Syrup", type: "Medication")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Carrot", type: "Food"),
+        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food")]
+        //        ],
+        //
+        //        [   // Thu
+        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Omega-3", type: "Supplement"),
+        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
+        //
+        //            [.init(progress: 8, totalProgress: 8, color: "#A980FF", title: "Metformin", type: "Medication")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
+        //        ],
+        //
+        //        [   // Fri
+        //            [.init(progress: 8, totalProgress: 8, color: "#2893D7", title: "Vitamin D", type: "Supplement"),
+        //             .init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Iron", type: "Supplement")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Orange", type: "Food"),
+        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Banana", type: "Food"),
+        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Grapes", type: "Food")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Lisinopril", type: "Medication")]
+        //        ],
+        //
+        //        [   // Sat
+        //            [.init(progress: 5, totalProgress: 5, color: "#2893D7", title: "Magnesium", type: "Supplement")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Amlodipine", type: "Medication"),
+        //             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Apple", type: "Food")]
+        //        ],
+        //
+        //        [   // Sun
+        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
+        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication")],
+        //
+        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food"),
+        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
+        //        ]
+        //    ]
+    
     @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
         
         [   // Mon
-            [.init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement")],
+            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement")]
             
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin C", type: "Medication"),
-             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Pycnogenol", type: "Medication"),
-             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-            
-            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Broccoli", type: "Food")]
         ],
         
         [   // Tue
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin D", type: "Medication")],
-            
-            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Apple", type: "Food")]
+            []
         ],
         
         [   // Wed
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Paracetamol", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Cough Syrup", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Carrot", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food")]
+            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement")]
         ],
         
         [   // Thu
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Omega-3", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-            
-            [.init(progress: 8, totalProgress: 8, color: "#A980FF", title: "Metformin", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
+            []
         ],
         
         [   // Fri
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Vitamin D", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Iron", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Orange", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Banana", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Grapes", type: "Food")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Lisinopril", type: "Medication")]
+            []
         ],
         
         [   // Sat
-            [.init(progress: 5, totalProgress: 5, color: "#2893D7", title: "Magnesium", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Amlodipine", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Apple", type: "Food")]
+            []
         ],
         
         [   // Sun
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
+            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Magnesium", type: "Supplement")]
         ]
+        
     ]
     
     var xDataList: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
