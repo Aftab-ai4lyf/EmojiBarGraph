@@ -1,10 +1,10 @@
-//
-//  ContentView.swift
-//  Demo
-//
-//  Created by AI4LYF on 14/07/2025.
-//
-//
+    //
+    //  ContentView.swift
+    //  Demo
+    //
+    //  Created by AI4LYF on 14/07/2025.
+    //
+    //
 
 
 import SwiftUI
@@ -12,79 +12,8 @@ import EmojiBarGraph
 
 struct ContentView: View {
     
-    @State var yDataList: [[[EmojiChartView.BarChart]]] = [
-        
-        [   // Mon
-            [.init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin C", type: "Medication"),
-             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Pycnogenol", type: "Medication"),
-             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-            
-            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Broccoli", type: "Food")]
-        ],
-        
-        [   // Tue
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin D", type: "Medication")],
-            
-            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Apple", type: "Food")]
-        ],
-        
-        [   // Wed
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Paracetamol", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Cough Syrup", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Carrot", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food")]
-        ],
-        
-        [   // Thu
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Omega-3", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-            
-            [.init(progress: 8, totalProgress: 8, color: "#A980FF", title: "Metformin", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
-        ],
-        
-        [   // Fri
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Vitamin D", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Iron", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Orange", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Banana", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Grapes", type: "Food")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Lisinopril", type: "Medication")]
-        ],
-        
-        [   // Sat
-            [.init(progress: 5, totalProgress: 5, color: "#2893D7", title: "Magnesium", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Amlodipine", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Apple", type: "Food")]
-        ],
-        
-        [   // Sun
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
-        ]
-    ]
+    @State private var yDataList: [[[EmojiChartView.BarChart]]] = []
+    @State private var areaLine: [Double] = []
     
     var xDataList: [String] =  ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
@@ -95,82 +24,133 @@ struct ContentView: View {
         "Severe": Color(hex: "#EF8089"),
         "Worst": Color(hex: "#E63946")
     ]
-
+    
+    @State var graphOrientation: EmojiChartView.ChartOrientation = .Horizontal
+    
+    @State var height: CGFloat = 300
+    
     var body: some View {
         
         VStack(spacing: 8) {
+              
+            EmojiChartView(
+                chartType: .GroupStackChart,
+                yDataList: $yDataList,
+                xDataList: xDataList,
+                areaLinesValues: areaLine,
+                graphOrientation: graphOrientation,
+                showEmoji: false,
+                showYValues: false,
+                showLines: false,
+                showAreaMark: true,
+                yAxisTitle: "",
+                valuesColor: .black,
+                linesColor: .black,
+                arealinesColor: .black.opacity(0.4),
+                gradientColors: [.red.opacity(0.4), .red.opacity(0.3), .red.opacity(0.2), .red.opacity(0.1), .clear],
+                progressBGColor: .clear
+            ).frame(height: height)
             
-            HStack {
-                
-                Text("Best")
-                    .font(.system(size: 10))
-                    .foregroundColor(.black)
-                
-                Spacer()
-                
-            }
             
-            GeometryReader { geometry in
+            Button("Change Orientation") {
                 
-                HStack(alignment: .top, spacing: 8) {
+                withAnimation {
                     
-                    Rectangle()
-                        .fill(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    severityColors["Best", default: .gray],
-                                    severityColors["Mild", default: .gray],
-                                    severityColors["Moderate", default: .gray],
-                                    severityColors["Severe", default: .gray],
-                                    severityColors["Worst", default: .gray]
-                                ]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .frame(width: 12)
-                        .frame(maxHeight: .infinity)
-                        .cornerRadius(12)
-                        .padding(.bottom, 16)
+                    graphOrientation = graphOrientation == .Horizontal ? .Vertical : .Horizontal
                     
-                    VStack {
+                    if graphOrientation == .Horizontal {
                         
-                        ForEach(1...5, id: \.self) { level in
-                            
-                            if level > 1 {
-                                
-                                Spacer()
-                                
-                            }
-                            
-                            Text("\(level)")
-                                .font(.system(size: 11))
-                                .foregroundColor(.black)
-                            
-                        }
+                        height = 300
+                        
+                    }else {
+                        
+                        height = 480
                         
                     }
-                    .frame(maxHeight: .infinity)
-                    .padding(.bottom, 16)
-                    
-                    EmojiChartView(chartType: .GroupStackChart, yDataList: $yDataList, xDataList: xDataList, showEmoji: false, showYValues: false, showLines: true, showAreaMark: true)
                     
                 }
                 
-            }.frame(height: 300)
-                .padding(.leading, 6)
+                
+            }
             
-            HStack {
+            Button("Regenerate Graph") {
+                let newData = generateRandomGraphData()
+                yDataList = newData.0
+                areaLine = newData.1
+            }
+            .padding(.top, 20)
+            
+            
+        }.padding(.horizontal)
+            .onAppear {
+            
+            let initialData = generateRandomGraphData()
+            yDataList = initialData.0
+            areaLine = initialData.1
+            
+        }.onChange(of: areaLine) { oldValue, newValue in
+            
+            print("area line changed: \(areaLine)")
+            
+        }.onChange(of: yDataList) { oldValue, newValue in
+            
+            for (dayIndex, categories) in yDataList.enumerated() {
+                print("📅 Day \(dayIndex + 1):")
                 
-                Text("Worst")
-                    .font(.system(size: 10))
-                    .foregroundColor(.black)
-                
-                Spacer()
-                
-            }.offset(y: -15)
+                for (catIndex, items) in categories.enumerated() {
+                    print("   ▸ Category \(catIndex + 1):")
+                    
+                    for (itemIndex, item) in items.enumerated() {
+                        print("      • Item \(itemIndex + 1): \(item.title) [progress: \(item.progress), color: \(item.color)]")
+                    }
+                }
+            }
             
         }
+        
+    }
+    
+    func generateRandomGraphData() -> ([[[EmojiChartView.BarChart]]], [Double]) {
+        let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        
+        let randomYValuesNew: [[[EmojiChartView.BarChart]]] = days.map { _ in
+            let numCategories = Int.random(in: 1...3)
+            
+            return (0..<numCategories).map { _ in
+                
+                let numItems = Int.random(in: 0...2)
+                
+                return (0..<numItems).map { _ in
+                    
+                    let progress = Double(Int.random(in: 1...2))
+                    
+                    let colors = ["#A980FF", "#7FD533", "#2893D7"]
+                    let types  = ["Food", "Medication", "Supplement"]
+                    
+                    let color = colors.randomElement()!
+                    let type = types.randomElement()!
+                    let title = (type == "Supplement") ? "Fish Oil" : type
+                    
+                    return EmojiChartView.BarChart(
+                        progress: progress,
+                        totalProgress: progress,
+                        color: color,
+                        title: title,
+                        type: type
+                    )
+                }
+            }
+        }
+        
+            // Random Y area line values (1–5 range)
+        let randomAreaLine = days.map { _ in
+            
+            let value = Int.random(in: 1...5)
+            return Double(value)
+            
+        }
+        
+        return (randomYValuesNew, randomAreaLine)
     }
     
 }
@@ -189,22 +169,22 @@ extension Color {
         Scanner(string: hex).scanHexInt64(&int)
         let a, r, g, b: UInt64
         switch hex.count {
-            case 3: // RGB (12-bit)
+                case 3: // RGB (12-bit)
                 (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-            case 6: // RGB (24-bit)
+                case 6: // RGB (24-bit)
                 (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-            case 8: // ARGB (32-bit)
+                case 8: // ARGB (32-bit)
                 (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-            default:
+                default:
                 (a, r, g, b) = (1, 1, 1, 0)
-        }
+                }
         
         self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
+        .sRGB,
+        red: Double(r) / 255,
+        green: Double(g) / 255,
+        blue:  Double(b) / 255,
+        opacity: Double(a) / 255
         )
-    }
+        }
 }
