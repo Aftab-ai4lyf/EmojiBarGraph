@@ -17,9 +17,11 @@ public struct EmojiGroupStackBarChart: View {
     @Binding var yValues: [[[EmojiChartView.BarChart]]]
     
     var xValues: [String]
+    var arealinesValues: [Double]
     var showEmoji: Bool
     var showYValues: Bool
     var showLines: Bool
+    var graphOrientation:EmojiChartView.ChartOrientation 
     
     var valuesColor: Color = .black
     var linesColor: Color = .black.opacity(0.50)
@@ -66,10 +68,9 @@ public struct EmojiGroupStackBarChart: View {
     
     @State var totalLines = 4
     
-    @State var totalHeight: CGFloat = 300
+    @State var totalHeight: CGFloat = 0
     
-    @State var innerLinesHeight: Int = 50
-    @State var bottomPadding: Double = 30.0
+    @State var innerLinesHeight: CGFloat = 0
     
     @State var firstDataSetValue:Int = 0
     @State var lastDataSetValue:Int = 0
@@ -85,148 +86,87 @@ public struct EmojiGroupStackBarChart: View {
     @State var selectedBarChart: EmojiChartView.BarChart? = nil
     @State var tooltipPosition: CGPoint = .zero
     
-    @State var isPortrait = true
-    
     @State var paddingLeading:CGFloat = 50
+    
+    @State var barCenters:[CGFloat] = []
     
     public var body: some View {
         
         GeometryReader { geo in
-            
-            let alignment: Alignment = isPortrait ? .center : .bottomLeading
-            
-            let screenWidth = geo.size.width
-            let baseWidth = max(screenWidth, CGFloat(yValues.count) * 12)
-            
-            let contentWidth = baseWidth + (isPortrait ? 60 : -50)
-            
-            
-            ZStack(alignment: .center) {
+    
+            ZStack {
                 
-                VStack(spacing: 0) {
+                if graphOrientation == .Horizontal {
                     
-                    HStack(spacing: 0) {
-                        
-                        YAxisTitle()
-                        
-                        VStack(spacing: 0) {
-                            
-                            YAxisValuesAndLines()
-                            
-                        }
-                        
-                    }
+                    EmojiHorizontalGroupStackBar(yValues: $yValues, xValues: xValues, arealinesValues: arealinesValues, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark, arealinesColor: arealinesColor, gradientColors: gradientColors)
+                        .frame(height: geo.size.height)
+                        .frame(width: geo.size.width)
                     
-                }.padding(.leading, hadTitle ? 8 : 0)
-                    .overlay {
-                        
-                        YAxisTextWidthOverlay()
-                        
-                    }.overlay(alignment: .bottom) {
-                        
-                        if !isError {
-                            
-                            
-                            ScrollView(.horizontal) {
-                                
-                                ZStack(alignment: alignment) {
-                                    
-                                    GroupStackBarView()
-                                        .background(
-                                            
-                                            Group {
-                                                
-                                                if showTooltip {
-                                                    
-                                                    Color.black.opacity(0.001)
-                                                        .contentShape(Rectangle())
-                                                        .onTapGesture {
-                                                            
-                                                            withAnimation {
-                                                                
-                                                                tooltipPosition = .zero
-                                                                showTooltip = false
-                                                                
-                                                            }
-                                                            
-                                                        }
-                                                    
-                                                }
-                                                
-                                            }
-                                            
-                                        )
-                                    
-                                    if showAreaMark && !isError && isDataLoaded {
-                                        
-                                        AreaMarkLineChart()
-                                            .frame(width: contentWidth)
-                                            .frame(height: geo.size.height - 20)
-                                            .padding(.leading, showYValues ? 26 : paddingLeading)
-                                            .padding(.bottom, isPortrait ? 0 : 54)
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }.scrollIndicators(.hidden)
-                                .scrollDisabled(!enableHorizontalScroll)
-                            
-                        }else {
-                            
-                            ErrorBarsView()
-                            
-                        }
-                        
-                    }.overlay(alignment: .center) {
-                        
-                        ErrorView()
-                        
-                    }.overlay(alignment: .topLeading) {
-                        
-                        if showTooltip, selectedBarChart != nil {
-                            
-                            let y1dDataList = yValues[tooltipIIndex][tooltipJIndex]
-                            
-                            let type = y1dDataList.first?.type
-                            
-                            let titleColorArray = y1dDataList.reduce(into: [(String, String)]()) { result, bar in
-                                
-                                if !result.contains(where: { $0.0 == bar.title }) {
-                                    
-                                    result.append((bar.title, bar.color))
-                                    
-                                }
-                                
-                            }
-                            
-                            EmojiTooltipView(type: type, titleColorArray: titleColorArray, fontName: fontName)
-                                .position(x: tooltipPosition.x, y: tooltipPosition.y)
-                                .transition(.opacity.combined(with: .scale))
-                            
-                        }
-                        
-                    }
-                
-            }.coordinateSpace(name: "ChartArea")
-                .padding()
-                .offset(y: -58)
-                .onOrientationChange { orientation in
+                }else {
                     
-                    isPortrait = orientation.isPortrait
-                    
-                }.onChange(of: yValues) { oldValue, newValue in
-                    
-                    validate()
-                    
-                }.onAppear {
-                    
-                    totalHeight = geo.size.height
-                    validate()
+                    EmojiVerticalGroupStackBar(yValues: $yValues, xValues: xValues, arealinesValues: arealinesValues, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark, arealinesColor: arealinesColor, gradientColors: gradientColors)
+                        .frame(height: geo.size.height)
+                        .frame(width: geo.size.width)
                     
                 }
+                
+            }
             
         }
+        
+//        GeometryReader { geo in
+//            
+//            ZStack {
+//                
+//                GeometryReader { geoInner in
+//                    
+//                    HStack(alignment: .top,spacing: 2) {
+//                        
+//                        YAxisTitle()
+//                        
+//                        Color.black.opacity(0.2)
+//                            .frame(width: 1)
+//                            .frame(height: CGFloat(totalHeight - CGFloat(innerLinesHeight / 2)) + 15, alignment: .top)
+//                        
+//                        YAxisValuesAndLines()
+//                        
+//                    }
+//                    
+//                }
+//                
+//                ScrollView(.horizontal) {
+//                    
+//                    GroupStackBarView()
+//                        .overlay(alignment: .top) {
+//                            
+//                            AreaMarkLineChart()
+//                                .frame(height: geo.size.height - 30)
+//                            
+//                        }
+//                    
+//                }.scrollIndicators(.hidden)
+//                
+//                    //                Text("area lines: \(arealinesValues.count) \nbar centers: \(barCenters.count) \narea lines: \(arealinesValues) \nbar centers: \(barCenters)")
+//                
+//                    //                Text("Height: \(totalHeight), Inner Line height: \(innerLinesHeight)")
+//                
+//            }.frame(height: totalHeight, alignment: .top)
+//                .onAppear{
+//                    
+//                    totalHeight = geo.size.height
+//                    validate()
+//                    
+//                }.onChange(of: yValues) { oldValue, newValue in
+//                    
+//                    validate()
+//                    
+//                }.overlay {
+//                    
+//                    YAxisTextWidthOverlay()
+//                    
+//                }
+//            
+//        }.coordinateSpace(name: "ChartArea")
         
     }
     
@@ -242,7 +182,7 @@ public struct EmojiGroupStackBarChart: View {
                 .rotationEffect(Angle(degrees: 270))
                 .foregroundColor(valuesColor)
                 .fixedSize()
-                .frame(width: 20, height: 0)
+                .frame(width: 20, height: totalHeight)
                 .onAppear {
                     
                     hadTitle = true
@@ -256,29 +196,40 @@ public struct EmojiGroupStackBarChart: View {
     @ViewBuilder
     func YAxisValuesAndLines() -> some View {
         
-        ForEach((0..<dataSet.count).reversed(), id: \.self) { i in
+        VStack(spacing: 0) {
             
-            HStack(spacing: 4) {
+            ForEach((0..<dataSet.count).reversed(), id: \.self) { i in
                 
-                if showYValues {
+                let isZero = i == dataSet.reversed().indices.first
+                let lineHeight = isZero ? CGFloat(innerLinesHeight / 2) : CGFloat(innerLinesHeight)
+                let bg = isZero ? Color.black.opacity(0.1) : Color.red.opacity(0.0)
+                
+                HStack(alignment: .top,spacing: 4) {
                     
                     Text("\(dataSet[i])")
                         .font(.custom(fontName, size: CGFloat(yAxisTitleSize)))
                         .foregroundColor(valuesColor)
-                        .frame(width: textWidth, height: CGFloat(innerLinesHeight), alignment: .trailing)
+                        .frame(width: showYValues ? textWidth : 0)
+                        .opacity(showYValues ? 1 : 0)
+                        .offset(y: -8)
                     
-                } else {
+                    if isZero {
+                        
+                        Color.black.opacity(0.2)
+                            .frame(height: 1)
+                        
+                    } else {
+                        
+                        Line()
+                            .stroke(style: StrokeStyle(lineWidth: 0.5, dash: [2]))
+                            .frame(height: 0.5)
+                            .foregroundColor(linesColor)
+                            .opacity(showLines ? 1 : 0)
+                        
+                    }
                     
-                    Spacer()
-                        .frame(width: 0, height: CGFloat(innerLinesHeight))
-                    
-                }
-                
-                Line()
-                    .stroke(style: StrokeStyle(lineWidth: 0.5, dash: [2]))
-                    .frame(height: 0.5)
-                    .foregroundColor(linesColor)
-                    .opacity(showLines ? 1 : 0)
+                }.frame(height: lineHeight,alignment: .top)
+                    .background(bg)
                 
             }
             
@@ -390,9 +341,10 @@ public struct EmojiGroupStackBarChart: View {
     @ViewBuilder
     func GroupStackBarView() -> some View {
         
-        HStack(alignment: .bottom, spacing: 8) {
+        HStack(alignment: .bottom, spacing: 12) {
             
             var lastXValue = ""
+            
             
             ForEach(0..<yValues.count, id: \.self) { i in
                 
@@ -403,20 +355,13 @@ public struct EmojiGroupStackBarChart: View {
                 
                 VStack(spacing: 0) {
                     
-                    HStack(spacing: 2) {
+                    HStack(alignment: .bottom, spacing: 2) {
                         
                         ForEach(0..<y2DValuesList.count,id: \.self) { j in
                             
                             let y1DValuesList = y2DValuesList[j]
                             
                             ZStack(alignment: .bottom) {
-                                
-                                let totalMaxSum = Int(y1DValuesList.compactMap { $0 }.reduce(0) { $0 + $1.totalProgress })
-                                let totalHeight = Double(innerLinesHeight * totalMaxSum)
-                                
-                                Capsule()
-                                    .frame(width: 12, height: totalHeight / heightDivider)
-                                    .foregroundColor(progressBGColor)
                                 
                                 VStack(spacing: 1) {
                                     
@@ -434,7 +379,7 @@ public struct EmojiGroupStackBarChart: View {
                                         
                                         let barChart = y1DValuesList[k]
                                         let progress = barChart.progress
-                                        let height = Double(innerLinesHeight) * Double(progress)
+                                        let height = (Double(innerLinesHeight) * Double(progress)) / heightDivider
                                         let color = barChart.color
                                         
                                         if progress > 0 {
@@ -451,34 +396,52 @@ public struct EmojiGroupStackBarChart: View {
                                     
                                 }
                                 
-                            }.padding(.bottom, CGFloat(bottomPadding))
+                            }
                             
                         }
                         
                     }
                     
                     if lastXValue != xValue {
-                        
-                        Text("\n\n" + xValue)
+                        Text(xValue)
                             .font(.custom(fontName, size: 12))
-                            .padding(.bottom, -4)
-                            .offset(y: -30)
-                            .onAppear {
-                                
-                                lastXValue = xValue
-                                
-                            }
+                            .padding(.top, 17)
                         
                     }
                     
-                }
-                
+                }.background(
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear {
+                                let frame = geo.frame(in: .named("ChartArea"))
+                                
+                                let valueToAdd: CGFloat
+                                if i == 0 {
+                                    valueToAdd = frame.minX   // startX
+                                } else if i == xValues.count - 1 {
+                                    valueToAdd = frame.maxX   // endX
+                                } else {
+                                    valueToAdd = frame.midX   // relativeX (center)
+                                }
+                                
+                                if barCenters.count > i {
+                                    barCenters[i] = valueToAdd
+                                    
+                                } else {
+                                    barCenters.append(valueToAdd) 
+                                }
+                                
+                                lastXValue = xValue
+                            }
+                    }
+                )
             }
             
-        }.padding(.leading, showYValues ? 16 : 0)
-            .id(mainMaxValue)
+        }.frame(height: totalHeight)
+            .padding(.leading, showYValues ? 16 : 0)
         
     }
+    
     
     @ViewBuilder
     func ProgressBarCell(height: Double, color: String, opacity: Double,i: Int,j: Int,k: Int,barChart:EmojiChartView.BarChart) -> some View {
@@ -486,7 +449,7 @@ public struct EmojiGroupStackBarChart: View {
         GeometryReader { proxy in
             
             Capsule()
-                .frame(width: 12, height: height / heightDivider)
+                .frame(width: 12, height: height)
                 .foregroundColor(Color(hex: color).opacity(opacity))
                 .onTapGesture {
                     
@@ -504,66 +467,86 @@ public struct EmojiGroupStackBarChart: View {
                     
                 }
             
-        }.frame(width: 12, height: height / heightDivider)
+        }.frame(width: 12, height: height, alignment: .bottom)
         
         
     }
-    
     
     @ViewBuilder
     func AreaMarkLineChart() -> some View {
-        
-        let gradientStops = areaMarkSwiftUIColors.enumerated().map { index, color in
-            
-            let baseOpacity = 0.15
-            let minOpacity = 0.1
-            
-            let opacity = baseOpacity - (Double(index) / Double(areaMarkSwiftUIColors.count - 1)) * (baseOpacity - minOpacity)
-            
-            return Gradient.Stop(color: color.opacity(opacity), location: Double(index) / Double(areaMarkSwiftUIColors.count - 1))
-        }
-        
-        let gradient = LinearGradient(
-            gradient: Gradient(stops: gradientStops),
-            startPoint: .leading,
-            endPoint: .trailing
-        )
-        
-        Chart {
-            
-            ForEach(Array(areaMarkDataSetList.enumerated()), id: \.offset) { item in
+        GeometryReader { geo in
+            Canvas { context, size in
                 
-                let i = item.offset
-                let progress = item.element
+                    // Replace 0 with 5
+                let adjustedValues = arealinesValues.map { $0 == 0 ? 5 : $0 }
                 
-                AreaMark(
-                    x: .value("Day", Double(i)),
-                    y: .value("Line", progress)
+                    // Scale to chart space (1 at top, 5 at bottom)
+                let scaledData = adjustedValues.map { value in
+                    let normalized = (CGFloat(value) - 1) / 4.0
+                    return size.height * normalized
+                }
+                
+                let (path, areaPath) = buildBezierPaths(
+                    scaledData: scaledData,
+                    barCenters: barCenters,
+                    size: size
                 )
-                .interpolationMethod(.catmullRom)
-                .foregroundStyle(gradient)
                 
-                LineMark(
-                    x: .value("Day", Double(i)),
-                    y: .value("Line", progress)
+                let stops: [Gradient.Stop] = areaMarkSwiftUIColors.enumerated().map { index, color in
+                    let fraction: CGFloat = size.width > 0 && index < barCenters.count
+                    ? barCenters[index] / size.width
+                    : 0
+                    return .init(color: color.opacity(0.2), location: fraction)
+                }
+                
+                let shading = GraphicsContext.Shading.linearGradient(
+                    Gradient(stops: stops),
+                    startPoint: .zero,
+                    endPoint: CGPoint(x: size.width, y: 0)
                 )
-                .interpolationMethod(.monotone)
-                .foregroundStyle(arealinesColor)
                 
+                context.fill(areaPath, with: shading)
+                context.stroke(path,
+                               with: .color(arealinesColor),
+                               style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
             }
         }
-        .chartXScale(domain: 0.0...Double(xValues.count - 1))
-        .chartYScale(domain: firstDataSetValue...lastDataSetValue)
-        .chartPlotStyle { plot in
-            plot.background(.clear)
-        }
-        .chartXAxis(.hidden)
-        .chartYAxis(.hidden)
-        .background(.clear)
-        .allowsHitTesting(false)
-        
     }
-        //
+    
+        // updated buildBezierPaths — now expects *already scaled y-values*
+    func buildBezierPaths(scaledData: [CGFloat], barCenters: [CGFloat], size: CGSize) -> (Path, Path) {
+        var linePath = Path()
+        var areaPath = Path()
+        
+        guard scaledData.count == barCenters.count, !scaledData.isEmpty else {
+            return (linePath, areaPath)
+        }
+        
+        let firstPoint = CGPoint(x: barCenters[0], y: scaledData[0])
+        linePath.move(to: firstPoint)
+        areaPath.move(to: CGPoint(x: barCenters[0], y: size.height))
+        areaPath.addLine(to: firstPoint)
+        
+        for i in 1..<scaledData.count {
+            let p0 = CGPoint(x: barCenters[i-1], y: scaledData[i-1])
+            let p1 = CGPoint(x: barCenters[i],   y: scaledData[i])
+            
+            let midX = (p0.x + p1.x) / 2
+            let cp1 = CGPoint(x: midX, y: p0.y)
+            let cp2 = CGPoint(x: midX, y: p1.y)
+            
+            linePath.addCurve(to: p1, control1: cp1, control2: cp2)
+            areaPath.addCurve(to: p1, control1: cp1, control2: cp2)
+        }
+        
+        if let lastX = barCenters.last {
+            areaPath.addLine(to: CGPoint(x: lastX, y: size.height))
+            areaPath.closeSubpath()
+        }
+        
+        return (linePath, areaPath)
+    }
+    
         // Validate the data if both xDataList and yDataList had same length
     func validate() {
         
@@ -619,9 +602,12 @@ public struct EmojiGroupStackBarChart: View {
             
         }
         
-        innerLinesHeight = (Int(totalHeight) / totalLines) + 18
+        innerLinesHeight = (totalHeight / CGFloat(totalLines - 1)) - 10
         
-        bottomPadding = 0.5 * Double(innerLinesHeight) - 36
+        if barCenters.count != xValues.count {
+            barCenters = Array(repeating: 0, count: xValues.count)
+        }
+        
         
         let firstValuesCount = yValues.first?.count ?? 0
         
@@ -639,7 +625,7 @@ public struct EmojiGroupStackBarChart: View {
             
         }
         
-        print("Max Value: \(maxValues), Max Value 1: \(maxValues1), Max Value 2: \(maxValues2), Bottom Padding: \(bottomPadding), innerLinesHeight: \(innerLinesHeight), totalHeight: \(totalHeight)")
+        print("Max Value: \(maxValues), Max Value 1: \(maxValues1), Max Value 2: \(maxValues2), innerLinesHeight: \(innerLinesHeight), totalHeight: \(totalHeight)")
         
         withAnimation {
             
@@ -732,67 +718,29 @@ public struct EmojiGroupStackBarChart: View {
         
         print("Value to add: \(valueToAdd), X Value: \(xValue)")
         
-        if xValue == 3 {
-            
-            print("1")
-            
-            stringArray.removeAll()
-            
-            if maxValue == 1 {
-                
-                heightDivider = Double(0.67)
-                
-            }else if maxValue == 2 {
-                
-                heightDivider = Double(0.8)
-                
-            }else {
-                
-                heightDivider = Double(0.5)
-                
-            }
-            
-            
-            let step = Double(xValue) / Double(totalLines)
-            
-            for i in 0..<totalLines {
-                
-                let value = step * Double(i)
-                
-                stringArray.append(String(format: "%.1f", value))
-                
-            }
-            
-        } else if xValue > 3 && xValue < 6 {
+        heightDivider = maxValue / Double((totalLines - 1))
+        
+        if xValue >= 3 && xValue < 6 {
             
             print("2")
             
             stringArray.removeAll()
             
-            let step = Double(xValue) / Double(totalLines)
+            let step = Double(xValue) / Double(totalLines - 1)
             
-            if xValue == 4 {
-                
-                heightDivider = 0.673
-                
-            } else if xValue == 5 {
-                
-                heightDivider = 0.842
-                
-            }
             
-            for i in 0...totalLines {
+            for i in 0..<array.count {
                 
                 let value = step * Double(i)
-                stringArray.append(String(format: "%.1f", value))
+                array[i] = value
+                
+                stringArray.append(String(format: "%.1f", array[i]))
                 
             }
             
         } else {
             
             print("3")
-            
-            heightDivider = Double(valueToAdd + 1)
             
             for i in 0..<array.count {
                 
@@ -822,6 +770,90 @@ public struct EmojiGroupStackBarChart: View {
         return stringArray
     }
     
+}
+
+@available(iOS 17.0, *)
+struct AreaLineChart: View {
+    var dataPoints: [Double]
+    var gradientColors: [Color]
+    var lineColor: Color
+    var minY: CGFloat = 1
+    var maxY: CGFloat = 5
+    
+    var body: some View {
+        GeometryReader { geo in
+            Canvas { context, size in
+                guard dataPoints.count > 1 else { return }
+                
+                let width = size.width
+                let height = size.height
+                let spacing = width / CGFloat(dataPoints.count - 1)
+                
+                    // Map data points to offsets
+                let points: [CGPoint] = dataPoints.enumerated().map { index, value in
+                    let newValue = value == 0 ? maxY : value
+                    let yPos = ((newValue - minY) / (maxY - minY)) * height
+                    return CGPoint(x: CGFloat(index) * spacing, y: yPos)
+                }
+                
+                var path = Path()
+                path.move(to: points.first!)
+                
+                    // Bézier smoothing
+                for i in 1..<points.count {
+                    let prev = points[i - 1]
+                    let curr = points[i]
+                    let midPoint = CGPoint(
+                        x: (prev.x + curr.x) / 2,
+                        y: (prev.y + curr.y) / 2
+                    )
+                    
+                    if i == 1 {
+                        path.addQuadCurve(to: midPoint, control: prev)
+                    } else {
+                        let prevMid = CGPoint(
+                            x: (points[i - 2].x + prev.x) / 2,
+                            y: (points[i - 2].y + prev.y) / 2
+                        )
+                        path.addCurve(to: midPoint, control1: prevMid, control2: prev)
+                    }
+                    
+                    if i == points.count - 1 {
+                        path.addQuadCurve(to: curr, control: midPoint)
+                    }
+                }
+                
+                    // Area fill path
+                var areaPath = path
+                areaPath.addLine(to: CGPoint(x: points.last!.x, y: height))
+                areaPath.addLine(to: CGPoint(x: points.first!.x, y: height))
+                areaPath.closeSubpath()
+                
+                    // Gradient fill with alpha steps
+                let baseOpacity: CGFloat = 0.15
+                let minOpacity: CGFloat = 0.1
+                let stops: [Gradient.Stop] = gradientColors.enumerated().map { index, color in
+                    let alpha = baseOpacity - (CGFloat(index) / CGFloat(max(1, gradientColors.count - 1))) * (baseOpacity - minOpacity)
+                    return .init(color: color.opacity(alpha), location: CGFloat(index) / CGFloat(max(1, gradientColors.count - 1)))
+                }
+                
+                let gradient = Gradient(stops: stops)
+                
+                    // Draw area
+                context.fill(
+                    areaPath,
+                    with: .linearGradient(
+                        gradient,
+                        startPoint: .zero,
+                        endPoint: CGPoint(x: size.width, y: 0)
+                    )
+                )
+                
+                    // Draw line
+                context.stroke(path, with: .color(lineColor), style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+            }
+        }
+    }
 }
 
 @available(iOS 17.0, *)
@@ -883,123 +915,117 @@ struct EmojiTooltipView: View {
 
 @available(iOS 17.0, *)
 #Preview {
-        //    @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
-        //
-        //        [   // Mon
-        //            [.init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin C", type: "Medication"),
-        //             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Pycnogenol", type: "Medication"),
-        //             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-        //
-        //            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Broccoli", type: "Food")]
-        //
-        //        ],
-        //
-        //        [   // Tue
-        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication"),
-        //             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin D", type: "Medication")],
-        //
-        //            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Apple", type: "Food")]
-        //        ],
-        //
-        //        [   // Wed
-        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Paracetamol", type: "Medication"),
-        //             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Cough Syrup", type: "Medication")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Carrot", type: "Food"),
-        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food")]
-        //        ],
-        //
-        //        [   // Thu
-        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Omega-3", type: "Supplement"),
-        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-        //
-        //            [.init(progress: 8, totalProgress: 8, color: "#A980FF", title: "Metformin", type: "Medication")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
-        //        ],
-        //
-        //        [   // Fri
-        //            [.init(progress: 8, totalProgress: 8, color: "#2893D7", title: "Vitamin D", type: "Supplement"),
-        //             .init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Iron", type: "Supplement")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Orange", type: "Food"),
-        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Banana", type: "Food"),
-        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Grapes", type: "Food")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Lisinopril", type: "Medication")]
-        //        ],
-        //
-        //        [   // Sat
-        //            [.init(progress: 5, totalProgress: 5, color: "#2893D7", title: "Magnesium", type: "Supplement")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Amlodipine", type: "Medication"),
-        //             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Apple", type: "Food")]
-        //        ],
-        //
-        //        [   // Sun
-        //            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-        //             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication")],
-        //
-        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food"),
-        //             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
-        //        ]
-        //    ]
-    
     @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
         
         [   // Mon
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement")]
+            [.init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Magnesium", type: "Supplement"),
+             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin C", type: "Medication"),
+             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Pycnogenol", type: "Medication"),
+             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
+            
+            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Broccoli", type: "Food")]
             
         ],
         
         [   // Tue
-            []
+            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Magnesium", type: "Supplement"),
+             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
+             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication"),
+             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin D", type: "Medication")],
+            
+            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Apple", type: "Food")]
         ],
         
         [   // Wed
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement")]
+            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Paracetamol", type: "Medication"),
+             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Cough Syrup", type: "Medication")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Carrot", type: "Food"),
+             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food")]
         ],
         
         [   // Thu
-            []
+            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Omega-3", type: "Supplement"),
+             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
+            
+            [.init(progress: 8, totalProgress: 8, color: "#A980FF", title: "Metformin", type: "Medication")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
         ],
         
         [   // Fri
-            []
+            [.init(progress: 8, totalProgress: 8, color: "#2893D7", title: "Vitamin D", type: "Supplement"),
+             .init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Iron", type: "Supplement")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Orange", type: "Food"),
+             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Banana", type: "Food"),
+             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Grapes", type: "Food")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Lisinopril", type: "Medication")]
         ],
         
         [   // Sat
-            []
+            [.init(progress: 5, totalProgress: 5, color: "#2893D7", title: "Magnesium", type: "Supplement")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Amlodipine", type: "Medication"),
+             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Apple", type: "Food")]
         ],
         
         [   // Sun
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Magnesium", type: "Supplement")]
+            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
+             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication")],
+            
+            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food"),
+             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
         ]
-        
     ]
     
+        //    @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
+        //
+        //        [   // Mon
+        //            []
+        //
+        //        ],
+        //
+        //        [   // Tue
+        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement"),.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement")],
+        //            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement"),.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement"),.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Magnesium", type: "Supplement")]
+        //        ],
+        //
+        //        [   // Wed
+        //            []
+        //        ],
+        //
+        //        [   // Thu
+        //            []
+        //        ]
+        //
+        //    ]
+    
     var xDataList: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        //    var xDataList: [String] = ["Mon", "Tue", "Wed", "Thu"]
+    
+    var areaLinesValues: [Double] = [2.0, 4.0, 1.0, 5.0, 1.0, 0.0, 1.0]
+        //    var areaLinesValues: [Double] = [3.0, 4.0, 2.0, 5.0]
     
     EmojiChartView(
         chartType: .GroupStackChart,
         yDataList: $yValues,
         xDataList: xDataList,
+        areaLinesValues: areaLinesValues,
         showEmoji: false,
         showYValues: false,
-        showLines: true,
+        showLines: false,
         showAreaMark: true,
         yAxisTitle: "",
         valuesColor: .black,
@@ -1007,7 +1033,7 @@ struct EmojiTooltipView: View {
         arealinesColor: .black.opacity(0.4),
         gradientColors: [.red.opacity(0.4), .red.opacity(0.3), .red.opacity(0.2), .red.opacity(0.1), .clear],
         progressBGColor: .clear
-    ).frame(height: 350)
+    ).frame(height: 300)
     
 }
 
