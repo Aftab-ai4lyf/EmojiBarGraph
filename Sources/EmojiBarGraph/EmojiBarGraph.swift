@@ -15,6 +15,8 @@ public struct EmojiChartView: View {
     
     @Binding public var yDataList:[[[EmojiChartView.BarChart]]]
     public var xDataList:[String]
+    public var areaLinesValues:[Double]?
+    public var graphOrientation:EmojiChartView.ChartOrientation?
     
     public var showEmoji:Bool
     public var showYValues: Bool
@@ -52,6 +54,8 @@ public struct EmojiChartView: View {
     public init(chartType: EmojiChartView.ChartType,
                 yDataList: Binding<[[[EmojiChartView.BarChart]]]>,
                 xDataList: [String],
+                areaLinesValues: [Double] = [],
+                graphOrientation: EmojiChartView.ChartOrientation? = .Horizontal,
                 showEmoji: Bool,
                 showYValues: Bool,
                 showLines: Bool,
@@ -71,6 +75,8 @@ public struct EmojiChartView: View {
         self._yDataList = yDataList
         self.chartType = chartType
         self.xDataList = xDataList
+        self.areaLinesValues = areaLinesValues
+        self.graphOrientation = graphOrientation
         self.showEmoji = showEmoji
         self.showYValues = showYValues
         self.showLines = showLines
@@ -93,50 +99,196 @@ public struct EmojiChartView: View {
     
     public var body: some View {
         
-        VStack {
+            //        GeometryReader { geo in
+            //
+            //            if graphOrientation == .Horizontal {
+            //
+            //                VStack(spacing: 8) {
+            //
+            //                    HStack {
+            //
+            //                        Text("Best")
+            //                            .font(.system(size: 10))
+            //                            .foregroundColor(.black)
+            //
+            //                        Spacer()
+            //
+            //                    }
+            //
+            //                    GeometryReader { geometry in
+            //
+            //                        HStack(alignment: .top, spacing: 8) {
+            //
+            //                            Rectangle()
+            //                                .fill(
+            //                                    LinearGradient(
+            //                                        gradient: Gradient(colors: [
+            //                                            severityColors["Best", default: .gray],
+            //                                            severityColors["Mild", default: .gray],
+            //                                            severityColors["Moderate", default: .gray],
+            //                                            severityColors["Severe", default: .gray],
+            //                                            severityColors["Worst", default: .gray]
+            //                                        ]),
+            //                                        startPoint: .top,
+            //                                        endPoint: .bottom
+            //                                    )
+            //                                )
+            //                                .frame(width: 12)
+            //                                .frame(maxHeight: .infinity)
+            //                                .cornerRadius(12)
+            //                                .padding(.bottom, 16)
+            //
+            //                            VStack {
+            //
+            //                                ForEach(1...5, id: \.self) { level in
+            //
+            //                                    if level > 1 {
+            //
+            //                                        Spacer()
+            //
+            //                                    }
+            //
+            //                                    Text("\(level)")
+            //                                        .font(.system(size: 11))
+            //                                        .foregroundColor(.black)
+            //
+            //                                }
+            //
+            //                            }
+            //                            .frame(maxHeight: .infinity)
+            //                            .padding(.bottom, 16)
+            //
+            //                            EmojiGroupStackBarChart(yValues: $yDataList, xValues: xDataList, arealinesValues: areaLinesValues ?? [], showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, graphOrientation: graphOrientation ?? .Horizontal, showAreaMark: showAreaMark, arealinesColor: arealinesColor, gradientColors: gradientColors)
+            //                                .setYAxisTitle(yAxisTitle ?? "")
+            //                                .setValuesColor(valuesColor)
+            //                                .setLinesColor(linesColor)
+            //                                .setBarBackgroundColor(progressBGColor)
+            //                                .setFontName(fontName)
+            //                                .setYAxisTitleSize(yAxisTitleSize)
+            //                                .setYAxisValuesSize(yAxisValuesSize)
+            //                                .setEmojiHeight(emojiHeight)
+            //                                .setEmojiWidth(emojiWidth)
+            //                                .enableHorizontalScroll(enableHorizontalScroll)
+            //
+            //                                //                    EmojiChartView(chartType: .GroupStackChart, yDataList: $yDataList, xDataList: xDataList, showEmoji: false, showYValues: true, showLines: true, showAreaMark: true)
+            //
+            //                        }
+            //
+            //                    }
+            //                    .padding(.leading, 6)
+            //
+            //                    HStack {
+            //
+            //                        Text("Worst")
+            //                            .font(.system(size: 10))
+            //                            .foregroundColor(.black)
+            //
+            //                        Spacer()
+            //
+            //                    }.offset(y: -15)
+            //
+            //                }
+            //
+            //            }else{
+            //
+            //                VStack {
+            //
+            //                    HStack {
+            //
+            //                        ForEach((1...5).reversed(), id: \.self) { level in
+            //
+            //                            if level < 5 {   // 👈 notice condition flips because reversed
+            //
+            //                                Spacer()
+            //
+            //                            }
+            //
+            //                            Text("\(level)")
+            //                                .font(.system(size: 11))
+            //                                .foregroundColor(.black)
+            //
+            //                        }
+            //
+            //                    }.padding(.leading, 40)
+            //                        .padding(.trailing, 2)
+            //
+            //                    EmojiGroupStackBarChart(yValues: $yDataList, xValues: xDataList, arealinesValues: areaLinesValues ?? [], showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, graphOrientation: graphOrientation ?? .Horizontal, showAreaMark: showAreaMark, arealinesColor: arealinesColor, gradientColors: gradientColors)
+            //                        .setYAxisTitle(yAxisTitle ?? "")
+            //                        .setValuesColor(valuesColor)
+            //                        .setLinesColor(linesColor)
+            //                        .setBarBackgroundColor(progressBGColor)
+            //                        .setFontName(fontName)
+            //                        .setYAxisTitleSize(yAxisTitleSize)
+            //                        .setYAxisValuesSize(yAxisValuesSize)
+            //                        .setEmojiHeight(emojiHeight)
+            //                        .setEmojiWidth(emojiWidth)
+            //                        .enableHorizontalScroll(enableHorizontalScroll)
+            //                        .frame(height: geo.size.height)
+            //                        .frame(width: geo.size.width)
+            //                        .padding(.top, 1)
+            //
+            //                }
+            //
+            //            }
+            //
+            //        }
+        
+        GeometryReader { geo in
             
-            if(chartType == .GroupChart){
+            VStack {
                 
-                EmojiGroupBarChart(yValues: .constant(yDataList.flatMap { $0 }), xValues: xDataList,showEmoji:showEmoji, showYValues:showYValues, showLines:showLines,showAreaMark:showAreaMark,arealinesColor:arealinesColor, gradientColors:gradientColors)
-                    .setYAxisTitle(yAxisTitle ?? "")
-                    .setValuesColor(valuesColor)
-                    .setLinesColor(linesColor)
-                    .setBarBackgroundColor(progressBGColor)
-                    .setFontName(fontName)
-                    .setYAxisTitleSize(yAxisTitleSize)
-                    .setYAxisValuesSize(yAxisValuesSize)
-                    .setEmojiHeight(emojiHeight)
-                    .setEmojiWidth(emojiWidth)
+                if(chartType == .GroupChart){
+                    
+                    EmojiGroupBarChart(yValues: .constant(yDataList.flatMap { $0 }), xValues: xDataList,showEmoji:showEmoji, showYValues:showYValues, showLines:showLines,showAreaMark:showAreaMark,arealinesColor:arealinesColor, gradientColors:gradientColors)
+                        .setYAxisTitle(yAxisTitle ?? "")
+                        .setValuesColor(valuesColor)
+                        .setLinesColor(linesColor)
+                        .setBarBackgroundColor(progressBGColor)
+                        .setFontName(fontName)
+                        .setYAxisTitleSize(yAxisTitleSize)
+                        .setYAxisValuesSize(yAxisValuesSize)
+                        .setEmojiHeight(emojiHeight)
+                        .setEmojiWidth(emojiWidth)
+                        .frame(height: geo.size.height)
+                        .frame(width: geo.size.width)
+                    
+                }else if(chartType == .StackChart){
+                    
+                    EmojiStackBarChart(yValues: .constant(yDataList.flatMap { $0 }), xValues: xDataList,showEmoji:showEmoji,showYValues:showYValues,showLines:showLines,showAreaMark:showAreaMark,arealinesColor: arealinesColor,gradientColors:gradientColors)
+                        .setYAxisTitle(yAxisTitle ?? "")
+                        .setValuesColor(valuesColor)
+                        .setLinesColor(linesColor)
+                        .setBarBackgroundColor(progressBGColor)
+                        .setFontName(fontName)
+                        .setYAxisTitleSize(yAxisTitleSize)
+                        .setYAxisValuesSize(yAxisValuesSize)
+                        .setEmojiHeight(emojiHeight)
+                        .setEmojiWidth(emojiWidth)
+                        .frame(height: geo.size.height)
+                        .frame(width: geo.size.width)
+                    
+                }else if(chartType == .GroupStackChart) {
+                    
+                    EmojiGroupStackBarChart(yValues: $yDataList, xValues: xDataList, arealinesValues: areaLinesValues ?? [], showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, graphOrientation: graphOrientation ?? .Horizontal, showAreaMark: showAreaMark, arealinesColor: arealinesColor, gradientColors: gradientColors)
+                        .setYAxisTitle(yAxisTitle ?? "")
+                        .setValuesColor(valuesColor)
+                        .setLinesColor(linesColor)
+                        .setBarBackgroundColor(progressBGColor)
+                        .setFontName(fontName)
+                        .setYAxisTitleSize(yAxisTitleSize)
+                        .setYAxisValuesSize(yAxisValuesSize)
+                        .setEmojiHeight(emojiHeight)
+                        .setEmojiWidth(emojiWidth)
+                        .enableHorizontalScroll(enableHorizontalScroll)
+                        .frame(height: geo.size.height)
+                        .frame(width: geo.size.width)
+                }
                 
-            }else if(chartType == .StackChart){
-                
-                EmojiStackBarChart(yValues: .constant(yDataList.flatMap { $0 }), xValues: xDataList,showEmoji:showEmoji,showYValues:showYValues,showLines:showLines,showAreaMark:showAreaMark,arealinesColor: arealinesColor,gradientColors:gradientColors)
-                    .setYAxisTitle(yAxisTitle ?? "")
-                    .setValuesColor(valuesColor)
-                    .setLinesColor(linesColor)
-                    .setBarBackgroundColor(progressBGColor)
-                    .setFontName(fontName)
-                    .setYAxisTitleSize(yAxisTitleSize)
-                    .setYAxisValuesSize(yAxisValuesSize)
-                    .setEmojiHeight(emojiHeight)
-                    .setEmojiWidth(emojiWidth)
-                
-            }else if(chartType == .GroupStackChart) {
-                
-                EmojiGroupStackBarChart(yValues: $yDataList, xValues: xDataList, showEmoji: showEmoji, showYValues: showYValues, showLines: showLines, showAreaMark: showAreaMark, arealinesColor: arealinesColor, gradientColors: gradientColors)
-                    .setYAxisTitle(yAxisTitle ?? "")
-                    .setValuesColor(valuesColor)
-                    .setLinesColor(linesColor)
-                    .setBarBackgroundColor(progressBGColor)
-                    .setFontName(fontName)
-                    .setYAxisTitleSize(yAxisTitleSize)
-                    .setYAxisValuesSize(yAxisValuesSize)
-                    .setEmojiHeight(emojiHeight)
-                    .setEmojiWidth(emojiWidth)
-                    .enableHorizontalScroll(enableHorizontalScroll)
-            }
+            }.frame(height: geo.size.height)
+                .frame(width: geo.size.width)
             
         }
+        
     }
     
     
@@ -218,15 +370,19 @@ public struct EmojiChartView: View {
         ]
     ]
     
-    var xDataList: [String] = ["M", "T", "W", "T", "F", "S", "S"]
+    var xDataList: [String] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    
+    var areaLinesValues: [Double] = [1.0, 3.0, 2.0, 5.0, 4.0, 0.0, 2.0]
     
     EmojiChartView(
         chartType: .GroupStackChart,
         yDataList: $yValues,
         xDataList: xDataList,
+        areaLinesValues: areaLinesValues,
+        graphOrientation: .Vertical,
         showEmoji: false,
         showYValues: false,
-        showLines: true,
+        showLines: false,
         showAreaMark: true,
         yAxisTitle: "",
         valuesColor: .black,
