@@ -16,4 +16,10 @@ extension EmojiChartView {
         
     }
     
+    public enum ChartOrientation{
+        
+        case Vertical, Horizontal
+        
+    }
+    
 }
