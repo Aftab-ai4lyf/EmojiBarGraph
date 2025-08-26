@@ -682,7 +682,8 @@ struct EmojiHorizontalGroupStackBar: View {
         
         print("Value to add: \(valueToAdd), X Value: \(xValue)")
         
-        heightDivider = maxValue / Double((totalLines - 1))
+        heightDivider = maxValue / Double((totalLines - 1)) + 0.09
+        
         
         if xValue >= 3 && xValue < 6 {
             
@@ -739,79 +740,212 @@ struct EmojiHorizontalGroupStackBar: View {
 
 @available(iOS 17.0, *)
 #Preview {
+//    @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
+//        
+//        [   // Mon
+//            [.init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Magnesium", type: "Supplement"),
+//             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin C", type: "Medication"),
+//             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Pycnogenol", type: "Medication"),
+//             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
+//            
+//            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Broccoli", type: "Food")]
+//            
+//        ],
+//        
+//        [   // Tue
+//            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Magnesium", type: "Supplement"),
+//             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
+//             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication"),
+//             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin D", type: "Medication")],
+//            
+//            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Apple", type: "Food")]
+//        ],
+//        
+//        [   // Wed
+//            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Paracetamol", type: "Medication"),
+//             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Cough Syrup", type: "Medication")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Carrot", type: "Food"),
+//             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food")]
+//        ],
+//        
+//        [   // Thu
+//            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Omega-3", type: "Supplement"),
+//             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
+//            
+//            [.init(progress: 8, totalProgress: 8, color: "#A980FF", title: "Metformin", type: "Medication")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
+//        ],
+//        
+//        [   // Fri
+//            [.init(progress: 8, totalProgress: 8, color: "#2893D7", title: "Vitamin D", type: "Supplement"),
+//             .init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Iron", type: "Supplement")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Orange", type: "Food"),
+//             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Banana", type: "Food"),
+//             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Grapes", type: "Food")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Lisinopril", type: "Medication")]
+//        ],
+//        
+//        [   // Sat
+//            [.init(progress: 5, totalProgress: 5, color: "#2893D7", title: "Magnesium", type: "Supplement")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Amlodipine", type: "Medication"),
+//             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Apple", type: "Food")]
+//        ],
+//        
+//        [   // Sun
+//            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
+//             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication")],
+//            
+//            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food"),
+//             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
+//        ]
+//    ]
+    
     @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
-        
-        [   // Mon
-            [.init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin C", type: "Medication"),
-             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Pycnogenol", type: "Medication"),
-             .init(progress: 3, totalProgress: 3, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-            
-            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Broccoli", type: "Food")]
-            
+        [
+            [
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "C469226E-9FD8-47AB-BE16-C96FEF1FE97C")!,
+                    progress: 5.0,
+                    totalProgress: 5.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Rice",
+                    type: "Food"
+                )
+            ]
         ],
-        
-        [   // Tue
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Magnesium", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Vitamin D", type: "Medication")],
-            
-            [.init(progress: 2, totalProgress: 2, color: "#7FD533", title: "Apple", type: "Food")]
+        [
+            [
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "5FB5AF25-1274-450A-B881-99884FEDF48E")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Rice",
+                    type: "Food"
+                ),
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "59A4E77A-4188-4D1B-AD00-E39C546A02E3")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Fries",
+                    type: "Food"
+                ),
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "7EFCF944-DCB1-4A97-A2E4-C4F8FF3EEAB3")!,
+                    progress: 2.0,
+                    totalProgress: 2.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Vhu",
+                    type: "Food"
+                ),
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "A167F349-2086-4C2E-9CC2-5458245F011A")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Cake",
+                    type: "Food"
+                )
+            ]
         ],
-        
-        [   // Wed
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Paracetamol", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Cough Syrup", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Carrot", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food")]
+        [
+            [
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "073E50AE-DEDF-4169-B039-57B652824B68")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Tea",
+                    type: "Food"
+                )
+            ]
         ],
-        
-        [   // Thu
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Omega-3", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Calcium", type: "Supplement")],
-            
-            [.init(progress: 8, totalProgress: 8, color: "#A980FF", title: "Metformin", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
+        [
+            [
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "EA32EF6D-779A-4A01-B095-0FB815CD8FAF")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Tea",
+                    type: "Food"
+                )
+            ]
         ],
-        
-        [   // Fri
-            [.init(progress: 8, totalProgress: 8, color: "#2893D7", title: "Vitamin D", type: "Supplement"),
-             .init(progress: 2, totalProgress: 2, color: "#2893D7", title: "Iron", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Orange", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Banana", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Grapes", type: "Food")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Lisinopril", type: "Medication")]
+        [
+            [
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "77A8B526-9725-47F5-B254-EEAD88A33A7E")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Biryani",
+                    type: "Food"
+                ),
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "E9894C41-9AB6-41DC-AB33-D694607036E6")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Fries",
+                    type: "Food"
+                ),
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "7BC79523-457B-440A-AD15-7A13793C1F31")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Chicken Sandwhich",
+                    type: "Food"
+                ),
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "DFC580AC-20BC-4056-BE35-348EE56AFE20")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Cold Drink",
+                    type: "Food"
+                ),
+                EmojiChartView.BarChart(
+                    id: UUID(uuidString: "A4CD5D9B-A9F6-4C42-AF7D-041EBF01A0DF")!,
+                    progress: 1.0,
+                    totalProgress: 1.0,
+                    color: "#7FD533",
+                    emoji: "",
+                    title: "Chicken Burger",
+                    type: "Food"
+                )
+            ]
         ],
-        
-        [   // Sat
-            [.init(progress: 5, totalProgress: 5, color: "#2893D7", title: "Magnesium", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Amlodipine", type: "Medication"),
-             .init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Ibuprofen", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Apple", type: "Food")]
-        ],
-        
-        [   // Sun
-            [.init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Zinc", type: "Supplement"),
-             .init(progress: 1, totalProgress: 1, color: "#2893D7", title: "Fish Oil", type: "Supplement")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#A980FF", title: "Aspirin", type: "Medication")],
-            
-            [.init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Spinach", type: "Food"),
-             .init(progress: 1, totalProgress: 1, color: "#7FD533", title: "Tomato", type: "Food")]
-        ]
+        [],
+        []
     ]
     
         //    @Previewable @State var yValues: [[[EmojiChartView.BarChart]]] = [
@@ -848,7 +982,7 @@ struct EmojiHorizontalGroupStackBar: View {
         xDataList: xDataList,
         areaLinesValues: areaLinesValues,
         showEmoji: false,
-        showYValues: false,
+        showYValues: true,
         showLines: false,
         showAreaMark: true,
         yAxisTitle: "",

